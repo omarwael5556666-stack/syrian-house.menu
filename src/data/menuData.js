@@ -1,0 +1,918 @@
+/**
+ * ===================================================
+ *  البيت السوري - Syrian House Restaurant Menu Data
+ * ===================================================
+ *
+ * Central data configuration file.
+ * Edit items, prices, descriptions, and categories here.
+ *
+ * Schema:
+ * {
+ *   id: Number,
+ *   category: String,
+ *   title: String,
+ *   description: String (optional),
+ *   price: Number | null,
+ *   priceM: Number | null (for sized items - Medium),
+ *   priceL: Number | null (for sized items - Large),
+ *   isNew: Boolean (optional, marks NEW items),
+ * }
+ */
+
+export const RESTAURANT_INFO = {
+  name: "مطعم البيت السوري",
+  tagline: "أهل قويسنا",
+  englishName: "Syrian House",
+  address: "قويسنا - ميدان الفلاح - إتجاه موقف شبين",
+  facebook: "Syrian House 2 البيت السوري",
+  // الرقم الذي يستلم أوردرات الواتساب (بدون + أو مسافات)
+  orderWhatsapp: "201055318226",
+  phones: [
+    { label: "موبايل 1", number: "01221437500", raw: "+201221437500" },
+    { label: "موبايل 2", number: "01092992468", raw: "+201092992468" },
+    { label: "موبايل 3", number: "01110600785", raw: "+201110600785" },
+    { label: "موبايل 4", number: "01055318226", raw: "+201055318226" },
+    { label: "هاتف أرضي", number: "0482580187", raw: "+20482580187" },
+  ],
+};
+
+// ─── Delivery Coverage Data ────────────────────────────────────
+export const DELIVERY_DATA = [
+  { location: "قويسنا البلد", fee: 45 },
+  { location: "شمنديل", fee: 45 },
+  { location: "بناس", fee: 45 },
+  { location: "كفر بناس", fee: 50 },
+  { location: "اشليم", fee: 60 },
+  { location: "كفر اشليم", fee: 60 },
+  { location: "قباله", fee: 75 },
+  { location: "كفر العرب", fee: 55 },
+  { location: "ام خنان", fee: 80 },
+  { location: "العجايزه", fee: 80 },
+  { location: "ميت سراج", fee: 80 },
+  { location: "كفر ميت سراج", fee: 80 },
+  { location: "ميت القصري", fee: 80 },
+  { location: "ميت ابو شيخه", fee: 70 },
+  { location: "شبين الكوم", fee: 100 },
+  { location: "ابو الحسن", fee: 55 },
+  { location: "كفر المنشي", fee: 65 },
+  { location: "كفر طه", fee: 55 },
+  { location: "طه شبرا", fee: 55 },
+  { location: "عزبة راتب", fee: 50 },
+  { location: "كفر زين الدين", fee: 100 },
+  { location: "شرانيس", fee: 45 },
+  { location: "الكفور", fee: 55 },
+  { location: "المنطقه", fee: 45 },
+  { location: "ميت برا", fee: 75 },
+  { location: "شبرا بخوم", fee: 80 },
+  { location: "بره العجوز", fee: 70 },
+  { location: "بجيرم", fee: 65 },
+  { location: "بني غريان", fee: 80 },
+  { location: "كفر هلال", fee: 90 },
+  { location: "عزبة على عبد الجواد", fee: 70 },
+  { location: "كفر الاكرم", fee: 80 },
+  { location: "الرمالي", fee: 65 },
+  { location: "مصطاي", fee: 70 },
+  { location: "طوخ طنبشا", fee: 70 },
+  { location: "طنبشا", fee: 70 },
+  { location: "بركة السبع", fee: 90 },
+  { location: "عزبة منشه", fee: 75 },
+  { location: "عرب ابو ذكري", fee: 55 },
+  { location: "اجهور", fee: 60 },
+  { location: "كفر وهب", fee: 50 },
+  { location: "عزية مسيحه", fee: 70 },
+  { location: "كفر عبده", fee: 45 },
+  { location: "عزية شمس", fee: 70 },
+];
+
+// ─── Category Constants ────────────────────────────────────────
+export const CATEGORIES = [
+  "سندوتشات البيت السوري",
+  "الكريبات",
+  "المقبلات",
+  "وجبات الغربي",
+  "الفراخ الشواية",
+  "أوزان الشاورما",
+  "أطباق العربي وفتات الشاورما",
+  "البيتزا",
+  "المكرونات",
+  "الإضافات",
+  "إضافات البيتزا",
+];
+
+
+// ─── Menu Items ────────────────────────────────────────────────
+let _id = 0;
+const nextId = () => ++_id;
+
+const menuData = [
+  // ═══════════════════════════════════════════════════════════
+  //  سندوتشات البيت السوري – Syrian House Sandwiches
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "شاورما فراخ",
+    description:"شاورما فراخ - شرايح خيار توميه",
+    price: 90,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "شاورما لحم",
+    description: "شاورما لحمه - شرايح خيار - طحينه - شرايح طماطم",
+    price: 95,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "شاورما ميكس",
+    description: "شاورما لحمه+فراخ - شرايح خيار - طحينه",
+    price: 100,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "شاورما كريسبي",
+    description: "قطع كريسبي+شاورمافراخ - توميه - كاتشب",
+    price: 110,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "ساندوتش كريسبي",
+    description: "قطع كريسبي - كاتشب - توميه",
+    price: 100,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "ساندوتش زنجر",
+    description: "قطع زنجر - كاتشب - توميه",
+    price: 100,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "ساندوتش شيش طاووق",
+    description: "قطع شيش طاووق - توميه",
+    price: 100,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "شاورما لحمة اكسترا",
+    description: "إضافة بطاطس + موتزريلا",
+    price: 95,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "شاورما فراخ اكسترا",
+    description: "إضافة بطاطس + موتزريلا",
+    price: 100,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "ساندوتش ميكس فراخ",
+    description: "شاورما فراخ + شيش طاووق + كريسبي + كاتشب + توميه",
+    price: 110,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "ساندوتش بطاطس سوري",
+    description: "بطاطس + توميه + كاتشب ",
+    price: 40,
+  },
+  {
+    id: nextId(),
+    category: "سندوتشات البيت السوري",
+    title: "ساندوتش بطاطس موتزريلا",
+    description: "",
+    price: 50,
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  //  الكريبات – Crepes
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب شاورما دجاج",
+    description: "",
+    price: 100,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب شاورما لحمة",
+    description: "",
+    price: 105,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب شاورما ميكس",
+    description: "",
+    price: 110,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب كريسبي",
+    description: "",
+    price: 100,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب زنجر",
+    description: "",
+    price: 100,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب شيش طاووق",
+    description: "",
+    price: 100,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب شيش بطاطس",
+    description: "",
+    price: 110,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب كريسبي بطاطس",
+    description: "",
+    price: 110,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب زنجر بطاطس",
+    description: "",
+    price: 110,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب ميكس فراخ",
+    description: "",
+    price: 120,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب بطاطس",
+    description: "",
+    price: 55,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب ميكسيكي حار",
+    description: "",
+    price: 100,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب ميكس جبن وبطاطس",
+    description: "",
+    price: 70,
+  },
+  {
+    id: nextId(),
+    category: "الكريبات",
+    title: "كريب فاهيتا دجاج",
+    description: "",
+    price: 100,
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  //  المقبلات – Appetizers / Sides
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "تومية صغيرة",
+    description: "",
+    price: 20,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "تومية كبيرة",
+    description: "",
+    price: 30,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "مخلل سوري",
+    description: "",
+    price: 10,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "عيش محمص",
+    description: "",
+    price: 20,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "عيش كريب",
+    description: "",
+    price: 5,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "عيش سوري",
+    description: "",
+    price: 4,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "طبق بطاطس",
+    description: "",
+    price: 25,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "محمره صغيره",
+    description: "",
+    price: 20,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: " محمره كبيره",
+    description: "",
+    price: 30,
+  },
+
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "طبق سمبوسة 3 قطع جبنة",
+    description: "",
+    price: 20,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "طبق سمبوسة 3 قطع لحمة",
+    description: "",
+    price: 25,
+  },
+
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "طبق أرز",
+    description: "",
+    price: 30,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "سلطة كولسلو",
+    description: "",
+    price: 30,
+  },
+  {
+    id: nextId(),
+    category: "المقبلات",
+    title: "طحينة",
+    description: "",
+    price: 30,
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  //  وجبات الغربي – Western‑Style Meals
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "وجبات الغربي",
+    title: "وجبة ميكس فراخ",
+    description: "يقدم مع تومية / أرز بسمتي / بطاطس / مخلل / عيش / سمبوسة",
+    price: 180,
+  },
+  {
+    id: nextId(),
+    category: "وجبات الغربي",
+    title: "وجبة كريسبي",
+    description: "يقدم مع تومية / أرز / بطاطس / مخلل / عيش / سمبوسة",
+    price: 175,
+  },
+  {
+    id: nextId(),
+    category: "وجبات الغربي",
+    title: "وجبة تشيش طاووق",
+    description: "يقدم مع تومية / أرز / بطاطس / مخلل / عيش / سمبوسة",
+    price: 175,
+  },
+  {
+    id: nextId(),
+    category: "وجبات الغربي",
+    title: "وجبة زنجر",
+    description: "يقدم مع تومية / أرز / بطاطس / مخلل / عيش / سمبوسة",
+    price: 175,
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  //  الفراخ الشواية – Grilled Chicken
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "الفراخ الشواية",
+    title: "فرخة مشوية شواية",
+    description: "يقدم مع تومية + عيش + مخلل + رز",
+    price: 380,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "الفراخ الشواية",
+    title: "نصف فرخة مشوية",
+    description: "يقدم مع تومية + عيش + مخلل+ رز",
+    price: 190,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "الفراخ الشواية",
+    title: "ربع فرخة مشوية (ورك)",
+    description: "يقدم مع تومية + عيش + مخلل + رز",
+    price: 120,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "الفراخ الشواية",
+    title: "ربع فرخة مشوية (صدر)",
+    description: "يقدم مع تومية + عيش + مخلل + رز",
+    price: 135,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "الفراخ الشواية",
+    title: "فرخة سادة",
+    description: "",
+    price: 340,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "الفراخ الشواية",
+    title: "نصف فرخة سادة",
+    description: "",
+    price: 180,
+    isNew: true,
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  //  أوزان الشاورما – Shawarma by Weight
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "أوزان الشاورما",
+    title: "ربع كيلو شاورما فراخ",
+    description: "",
+    price: 175,
+  },
+  {
+    id: nextId(),
+    category: "أوزان الشاورما",
+    title: "ربع كيلو شاورما لحمة",
+    description: "",
+    price: 175,
+  },
+  {
+    id: nextId(),
+    category: "أوزان الشاورما",
+    title: "نصف كيلو شاورما فراخ",
+    description: "",
+    price: 350,
+  },
+  {
+    id: nextId(),
+    category: "أوزان الشاورما",
+    title: "نصف كيلو شاورما لحمة",
+    description: "",
+    price: 350,
+  },
+  {
+    id: nextId(),
+    category: "أوزان الشاورما",
+    title: "ربع كيلو شيش",
+    description: "",
+    price: 175,
+  },
+  {
+    id: nextId(),
+    category: "أوزان الشاورما",
+    title: "ربع كيلو كريسبي",
+    description: "",
+    price: 175,
+  },
+  {
+    id: nextId(),
+    category: "أوزان الشاورما",
+    title: "نصف كيلو شيش",
+    description: "",
+    price: 350,
+  },
+  {
+    id: nextId(),
+    category: "أوزان الشاورما",
+    title: "نصف كيلو كريسبي",
+    description: "",
+    price: 350,
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  //  أطباق العربي وفتات الشاورما – Arabic Dishes & Shawarma Fatta
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "فتة شاورما دجاج",
+    description: "تومية + عيش محمص + مخلل",
+    price: 145,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "فتة شاورما لحمة",
+    description: "تومية + عيش محمص + مخلل",
+    price: 145,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "فتة شاورما ميكس",
+    description: "تومية + عيش محمص + مخلل",
+    price: 150,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "فتة شيش طاووق",
+    description: "تومية + عيش محمص + مخلل",
+    price: 150,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "شاورما دجاج عربي مقطع ساندوتش واحد",
+    description: "بطاطس + تومية + مخلل سوري + محمرة + عيش سوري",
+    price: 130,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "شاورما لحمة عربي مقطع ساندوتش واحد",
+    description: "بطاطس + تومية + مخلل سوري + محمرة + عيش سوري",
+    price: 135,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "شاورما ميكس عربي مقطع ساندوتش واحد",
+    description: "بطاطس + تومية + مخلل سوري + محمرة + عيش سوري",
+    price: 135,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "شاورما دجاج عربي مقطع دبل 2 ساندوتش",
+    description: "يقدم مع خضار مشكل و بطاطس وتوميه ومخلل",
+    price: 220,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "شاورما لحمة عربي مقطع دبل 2 ساندوتش",
+    description: "يقدم مع خضار مشكل وبطاطس و توميه ومخلل",
+    price: 220,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "شاورما ميكس عربي مقطع دبل 2 ساندوتش",
+    description: "يقدم مع خضار مشككل وبطاطس و توميه ومخلل"
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "وجبة عربي عائلي فراخ",
+    description: "3 ساندوتش عربي مقطع + مخلل + محمرة + عيش سوري",
+    price: 350,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "وجبة عربي عائلي لحمة",
+    description: "3 ساندوتش عربي مقطع + مخلل + محمرة + عيش سوري",
+    price: 350,
+  },
+  {
+    id: nextId(),
+    category: "أطباق العربي وفتات الشاورما",
+    title: "وجبة عربي عائلي ميكس",
+    description: "3 ساندوتش عربي مقطع + مخلل + محمرة + عيش سوري",
+    price: 350,
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  //  البيتزا – Pizza  (M = Medium, L = Large)
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا مرجريتا",
+    description: "",
+    price: null,
+    priceM: 115,
+    priceL: 140,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا خضراوات",
+    description: "",
+    price: null,
+    priceM: 115,
+    priceL: 140,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا سوسيس",
+    description: "",
+    price: null,
+    priceM: 135,
+    priceL: 155,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا سجق",
+    description: "",
+    price: null,
+    priceM: 135,
+    priceL: 155,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا لحم مفروم",
+    description: "",
+    price: null,
+    priceM: 135,
+    priceL: 160,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا تشيش",
+    description: "",
+    price: null,
+    priceM: 135,
+    priceL: 160,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا كريسبي",
+    description: "",
+    price: null,
+    priceM: 135,
+    priceL: 160,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا شاورما فراخ",
+    description: "",
+    price: null,
+    priceM: 135,
+    priceL: 160,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا شاورما لحم",
+    description: "",
+    price: null,
+    priceM: 140,
+    priceL: 165,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا ميكس شاورما",
+    description: "",
+    price: null,
+    priceM: 140,
+    priceL: 165,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا ميكس لحوم",
+    description: "",
+    price: null,
+    priceM: 140,
+    priceL: 165,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا ميكس فراخ",
+    description: "",
+    price: null,
+    priceM: 130,
+    priceL: 140,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا ماشروم",
+    description: "",
+    price: null,
+    priceM: 130,
+    priceL: 150,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا جمبري",
+    description: "",
+    price: null,
+    priceM: 155,
+    priceL: 170,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا تشيكن رانش",
+    description: "",
+    price: null,
+    priceM: 145,
+    priceL: 165,
+  },
+  {
+    id: nextId(),
+    category: "البيتزا",
+    title: "بيتزا تشيكن باربيكيو",
+    description: "",
+    price: null,
+    priceM: 145,
+    priceL: 165,
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  //  المكرونات – Pasta
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "المكرونات",
+    title: "نجرسكو فراخ",
+    description: "",
+    price: 110,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "المكرونات",
+    title: "مكرونة بشاميل لحم مفرومة",
+    description: "",
+    price: 110,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "المكرونات",
+    title: "مكرونة وايت صوص فراخ",
+    description: "",
+    price: 110,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "المكرونات",
+    title: "مكرونة وايت صوص تشيش",
+    description: "",
+    price: 110,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "المكرونات",
+    title: "مكرونة وايت صوص كريسبي",
+    description: "",
+    price: 110,
+    isNew: true,
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  //  الإضافات – Extras
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "الإضافات",
+    title: "بطاطس",
+    description: "",
+    price: 10,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "الإضافات",
+    title: "موتزريلا",
+    description: "",
+    price: 15,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "الإضافات",
+    title: "تشيدر",
+    description: "",
+    price: 20,
+    isNew: true,
+  },
+  {
+    id: nextId(),
+    category: "الإضافات",
+    title: "فراخ",
+    description: "",
+    price: 25,
+    isNew: true,
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  //  إضافات البيتزا – Pizza Extras  (M / L)
+  // ═══════════════════════════════════════════════════════════
+  {
+    id: nextId(),
+    category: "إضافات البيتزا",
+    title: "حشو أطراف",
+    description: "",
+    price: null,
+    priceM: 30,
+    priceL: 40,
+  },
+  {
+    id: nextId(),
+    category: "إضافات البيتزا",
+    title: "إضافات لحم",
+    description: "",
+    price: null,
+    priceM: 40,
+    priceL: 45,
+  },
+  {
+    id: nextId(),
+    category: "إضافات البيتزا",
+    title: "إضافات فراخ",
+    description: "",
+    price: null,
+    priceM: 40,
+    priceL: 45,
+  },
+  {
+    id: nextId(),
+    category: "إضافات البيتزا",
+    title: "إضافة جمبري",
+    description: "",
+    price: null,
+    priceM: 50,
+    priceL: 60,
+  },
+  {
+    id: nextId(),
+    category: "إضافات البيتزا",
+    title: "إضافة موتزريلا",
+    description: "",
+    price: null,
+    priceM: 30,
+    priceL: 40,
+  },
+];
+
+export default menuData;
