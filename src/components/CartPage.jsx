@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowRight, Minus, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, Minus, Plus, Trash2, MapPin } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import useMenuData from "../hooks/useMenuData";
 import useDeliveryZones from "../hooks/useDeliveryZones";
@@ -15,6 +15,7 @@ export default function CartPage() {
   const [phone, setPhone] = useState("");
   const [phone2, setPhone2] = useState("");
   const [zoneName, setZoneName] = useState("");
+  const [quesnaDetail, setQuesnaDetail] = useState("");
   const [orderNote, setOrderNote] = useState("");
 
   // Resolve live item data; drop items that disappeared or became unavailable.
@@ -53,6 +54,8 @@ export default function CartPage() {
   };
 
   const phoneOk = isValidPhone(phone);
+  const isQuesna = zoneName === "قويسنا";
+  const quesnaOk = !isQuesna || quesnaDetail.trim().length > 0;
 
   function sendToWhatsapp() {
     const L = [];
@@ -70,6 +73,9 @@ export default function CartPage() {
     L.push(`*المجموع:* ${subtotal} ج.م`);
     if (zone) {
       L.push(`*التوصيل:* ${zone.location} (${deliveryFee} ج.م)`);
+      if (isQuesna && quesnaDetail.trim()) {
+        L.push(`*المكان بالتفصيل في قويسنا:* ${quesnaDetail.trim()}`);
+      }
       L.push(`*الإجمالي:* ${total} ج.م`);
     }
     if (customerName.trim()) {
@@ -268,6 +274,28 @@ export default function CartPage() {
               </p>
             </div>
 
+            {/* Exact location in Quesna - user writes their detailed address */}
+            {isQuesna && (
+              <div className="mb-4 animate-fade-in">
+                <label
+                  htmlFor="cust-quesna-detail"
+                  className="flex items-center gap-1.5 text-xs font-bold text-brand-300 mb-1"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-brand-400" />
+                  <span>فين بالضبط في قويسنا؟ *</span>
+                </label>
+                <input
+                  id="cust-quesna-detail"
+                  type="text"
+                  value={quesnaDetail}
+                  onChange={(e) => setQuesnaDetail(e.target.value)}
+                  placeholder="اكتب العنوان بالتفصيل (اسم الشارع، علامة مميزة، رقم العمارة…)"
+                  required
+                  className="w-full h-11 px-4 rounded-xl bg-dark-800/80 border border-brand-500/40 text-sm text-gray-100 placeholder:text-gray-500 outline-none focus:border-brand-500 transition-colors duration-150"
+                />
+              </div>
+            )}
+
             {/* General order note */}
             <div className="mb-6">
               <label htmlFor="order-note" className="block text-xs font-bold text-gray-400 mb-1">
@@ -304,7 +332,7 @@ export default function CartPage() {
             {/* Send */}
             <button
               onClick={sendToWhatsapp}
-              disabled={!zone || lines.live.length === 0 || !phoneOk}
+              disabled={!zone || lines.live.length === 0 || !phoneOk || !quesnaOk}
               className="w-full h-12 rounded-2xl bg-gradient-to-l from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.99] transition-all duration-150 text-white font-extrabold text-base shadow-lg shadow-black/30"
             >
               إرسال الطلب عبر واتساب
@@ -312,6 +340,11 @@ export default function CartPage() {
             {!phoneOk && (
               <p className="text-xs text-gray-500 text-center mt-2">
                 اكتب رقم موبايلك عشان نعرف نوصللك الطلب
+              </p>
+            )}
+            {phoneOk && isQuesna && !quesnaDetail.trim() && (
+              <p className="text-xs text-brand-400 text-center mt-2">
+                برجاء تحديد مكانك بالتفصيل في قويسنا لإرسال الطلب
               </p>
             )}
 

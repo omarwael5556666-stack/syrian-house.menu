@@ -8,7 +8,7 @@ import CategoryTabs from "./components/CategoryTabs";
 import MenuCard from "./components/MenuCard";
 import EmptyState from "./components/EmptyState";
 import CartBar from "./components/CartBar";
-import { Phone, MapPin, Share2 } from "lucide-react";
+import { Phone, MapPin } from "lucide-react";
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -104,7 +104,7 @@ export default function App() {
           ) : (
             <div className="space-y-12">
               {Object.entries(groupedItems).map(([category, items]) => (
-                <section key={category}>
+                <section key={category} className="menu-section">
                   {/* Section Header */}
                   {(activeCategory === "الكل" || searchQuery) && (
                     <div className="flex items-center gap-4 mb-6">
@@ -125,7 +125,7 @@ export default function App() {
                         key={item.id}
                         item={item}
                         index={idx}
-                        onAdd={(size) => addToCart(item.id, size)}
+                        onAdd={addToCart}
                       />
                     ))}
                   </div>

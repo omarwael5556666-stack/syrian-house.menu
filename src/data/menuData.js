@@ -38,6 +38,7 @@ export const RESTAURANT_INFO = {
 
 // ─── Delivery Coverage Data ────────────────────────────────────
 export const DELIVERY_DATA = [
+  { location: "قويسنا", fee: 15 },
   { location: "قويسنا البلد", fee: 45 },
   { location: "شمنديل", fee: 45 },
   { location: "بناس", fee: 45 },

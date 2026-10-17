@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { Tag } from "lucide-react";
 
-export default function MenuCard({ item, index, onAdd }) {
+function MenuCard({ item, index, onAdd }) {
   const hasSizes = item.priceM != null && item.priceL != null;
   const staggerClass = `stagger-${(index % 8) + 1}`;
 
@@ -45,7 +46,7 @@ export default function MenuCard({ item, index, onAdd }) {
             ].map(([size, price]) => (
               <button
                 key={size}
-                onClick={() => onAdd(size)}
+                onClick={() => onAdd(item.id, size)}
                 className="h-10 rounded-xl bg-gradient-to-l from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 active:scale-[0.96] transition-all duration-150 text-white text-sm font-extrabold shadow-md shadow-black/30"
                 title={`أضف ${item.title} حجم ${size} للسلة`}
               >
@@ -55,7 +56,7 @@ export default function MenuCard({ item, index, onAdd }) {
           </div>
         ) : (
           <button
-            onClick={() => onAdd(null)}
+            onClick={() => onAdd(item.id, null)}
             className="w-full h-10 rounded-xl bg-gradient-to-l from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 active:scale-[0.97] transition-all duration-150 text-white font-extrabold text-sm sm:text-base shadow-md shadow-black/30"
           >
             أضف للسلة • {item.price} ج.م
@@ -65,4 +66,6 @@ export default function MenuCard({ item, index, onAdd }) {
     </article>
   );
 }
+
+export default memo(MenuCard);
 
