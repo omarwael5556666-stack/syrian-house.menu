@@ -1,8 +1,25 @@
-import { UtensilsCrossed, MapPin, Phone, PhoneCall } from "lucide-react";
+import { UtensilsCrossed, MapPin, Phone, PhoneCall, ShoppingBag, Sparkles, ArrowDown } from "lucide-react";
 import { RESTAURANT_INFO } from "../data/menuData";
+import { useCart } from "../context/CartContext";
+import { navigate } from "../lib/router";
 import DeliverySearch from "./DeliverySearch";
 
 export default function Header() {
+  const { entries } = useCart();
+  const itemCount = entries.reduce((s, e) => s + e.qty, 0);
+
+  function handleOrderClick() {
+    if (itemCount > 0) {
+      navigate("/cart");
+    } else {
+      const searchEl = document.getElementById("menu-search");
+      if (searchEl) {
+        searchEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => searchEl.focus(), 350);
+      }
+    }
+  }
+
   return (
     <header className="relative pt-8 pb-6 text-center">
       {/* Decorative Line */}
@@ -26,16 +43,40 @@ export default function Header() {
       </p>
 
       {/* Address */}
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-xs sm:text-sm text-brand-300 mb-4">
+      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-xs sm:text-sm text-brand-300 mb-5">
         <MapPin className="w-4 h-4 text-brand-400 shrink-0" />
         <span>{RESTAURANT_INFO.address}</span>
       </div>
 
-      {/* Ordering hint */}
-      <div className="mb-6">
-        <p className="inline-block text-xs sm:text-sm text-brand-300 bg-brand-500/10 border border-brand-500/20 rounded-full px-4 py-2.5 leading-relaxed">
-          اطلب أونلاين: اضغط «أضف للسلة» على الأصناف اللي تحبها، وابعت طلبك
-          واتساب في ثانية
+      {/* ─── Hero Order CTA Button ─────────────────────── */}
+      <div className="mb-8 max-w-lg mx-auto px-2">
+        <button
+          onClick={handleOrderClick}
+          className="hero-order-btn w-full px-6 py-4 rounded-2xl text-white font-extrabold text-base sm:text-lg flex items-center justify-center gap-3 cursor-pointer group"
+          title="اضغط لطلب الأوردر أونلاين"
+        >
+          {/* Live pulsing status dot */}
+          <span className="pulse-indicator w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0" />
+
+          <ShoppingBag className="w-5 h-5 text-white transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6 shrink-0" />
+
+          <span className="tracking-wide">
+            {itemCount > 0
+              ? `استكمال طلبك (${itemCount} أصناف في السلة)`
+              : "اضغط هنا لطلب الأوردر أونلاين"}
+          </span>
+
+          {itemCount > 0 ? (
+            <Sparkles className="w-4 h-4 text-amber-200 animate-pulse shrink-0" />
+          ) : (
+            <ArrowDown className="w-4 h-4 text-white/80 transition-transform duration-300 group-hover:translate-y-1 shrink-0" />
+          )}
+        </button>
+
+        <p className="mt-2.5 text-xs sm:text-sm text-brand-300/80 font-medium leading-relaxed">
+          {itemCount > 0
+            ? "اضغط للدخول على سلة الطلبات وتأكيد الأوردر عبر واتساب 📲"
+            : "الموقع للطلب المباشر — اختر وجباتك وأرسل طلبك فوراً لواتساب المطعم"}
         </p>
       </div>
 

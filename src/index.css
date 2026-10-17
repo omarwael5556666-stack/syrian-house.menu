@@ -514,3 +514,81 @@ body {
   contain-intrinsic-size: auto 350px;
 }
 
+/* ─── Hero Order CTA Button ─────────────────────── */
+.hero-order-btn {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ff9310 0%, #f07806 50%, #c75b07 100%);
+  box-shadow:
+    0 10px 30px -5px rgba(255, 147, 16, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-order-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 16px 36px -5px rgba(255, 147, 16, 0.6),
+    0 0 25px rgba(255, 147, 16, 0.35);
+}
+
+.hero-order-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Moving shimmer sweep */
+.hero-order-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  animation: heroShimmer 3.5s infinite;
+}
+
+@keyframes heroShimmer {
+  0% {
+    left: -150%;
+  }
+  30%, 100% {
+    left: 200%;
+  }
+}
+
+.pulse-indicator {
+  position: relative;
+}
+
+.pulse-indicator::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background: rgba(52, 211, 153, 0.6);
+  animation: pulseGreen 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulseGreen {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+
