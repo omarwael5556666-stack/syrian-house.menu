@@ -49,10 +49,10 @@ export default function Header({ searchQuery, onSearchChange }) {
           <p className="text-[11px] font-bold text-gray-400 flex items-center justify-center gap-1">
             <span>أهلاً بك 👋</span>
           </p>
-          <h1 className="text-xl sm:text-2xl font-black text-[#E4002B] tracking-tight leading-none mt-0.5 truncate">
+          <h1 className="text-xl sm:text-2xl font-black text-[#E4002B] tracking-tight leading-normal py-0.5">
             {RESTAURANT_INFO.name}
           </h1>
-          <p className="text-[10px] sm:text-[11px] font-bold text-gray-500 mt-1 truncate">
+          <p className="text-[10px] sm:text-[11px] font-bold text-gray-500 mt-0.5">
             {RESTAURANT_INFO.tagline} • {RESTAURANT_INFO.englishName}
           </p>
         </div>
@@ -143,7 +143,7 @@ export default function Header({ searchQuery, onSearchChange }) {
         <div className="absolute inset-0 bg-gradient-to-l from-black/92 via-black/65 to-black/20" />
         <div className="absolute inset-0 bg-[#7A0210]/15 mix-blend-multiply" />
 
-        <div className="relative z-10 max-w-[280px] sm:max-w-xs">
+        <div className="relative z-10 max-w-[310px] sm:max-w-sm">
           <span className="inline-block text-[10px] font-black tracking-wider bg-[#E4002B] text-white px-2.5 py-0.5 rounded-full mb-1.5 uppercase shadow-sm">
             {RESTAURANT_INFO.tagline}
           </span>
@@ -151,7 +151,7 @@ export default function Header({ searchQuery, onSearchChange }) {
             طعم سوري أصيل.
           </h2>
           <p className="text-[11px] sm:text-xs text-white/95 font-semibold mb-3.5 leading-relaxed drop-shadow-sm">
-            أشهى شاورما لحمة وفراخ، فتات، كريب، ووجبات غربي طازجة فورية.
+            أشهى شاورما لحمة وفراخ، فتات، كريب، وجبات غربي، و بيتزا طازجة فورية.
           </p>
 
           <button

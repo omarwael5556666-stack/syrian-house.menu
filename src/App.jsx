@@ -174,7 +174,7 @@ export default function App() {
           id="contact-section"
           className="mt-6 bg-white rounded-3xl p-5 border border-gray-100 shadow-sm text-center"
         >
-          <h3 className="text-base font-black text-gray-900 mb-1">
+          <h3 className="text-base sm:text-lg font-black text-gray-900 mb-1 leading-normal py-0.5">
             {RESTAURANT_INFO.name}
           </h3>
           <p className="text-xs font-bold text-[#E4002B] mb-2">
