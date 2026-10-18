@@ -174,16 +174,26 @@ export default function App() {
           id="contact-section"
           className="mt-6 bg-white rounded-3xl p-5 border border-gray-100 shadow-sm text-center"
         >
-          <h3 className="text-base font-black text-gray-900 mb-1">
+          {/* Decorative Divider */}
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className="h-0.5 w-8 bg-[#E4002B]/30 rounded-full" />
+            <span className="text-[#E4002B] text-lg">🏠</span>
+            <span className="h-0.5 w-8 bg-[#E4002B]/30 rounded-full" />
+          </div>
+
+          <h3 className="text-xl font-black text-[#E4002B] mb-1 tracking-tight">
             {RESTAURANT_INFO.name}
           </h3>
-          <p className="text-xs font-bold text-[#E4002B] mb-2">
+          <p className="text-sm font-black text-gray-800 mb-0.5">
+            {RESTAURANT_INFO.englishName}
+          </p>
+          <p className="text-xs font-bold text-gray-500 mb-3">
             {RESTAURANT_INFO.tagline}
           </p>
 
-          <p className="text-xs text-gray-500 mb-4 flex items-center justify-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-[#E4002B] shrink-0" />
-            <span>{RESTAURANT_INFO.address}</span>
+          <p className="text-xs text-gray-600 mb-4 flex items-center justify-center gap-1.5 bg-gray-50 rounded-xl px-3 py-2 border border-gray-100">
+            <MapPin className="w-4 h-4 text-[#E4002B] shrink-0" />
+            <span className="font-bold">{RESTAURANT_INFO.address}</span>
           </p>
 
           <div className="border-t border-gray-100 pt-3">
@@ -197,19 +207,19 @@ export default function App() {
                 <a
                   key={contact.number}
                   href={`tel:${contact.raw}`}
-                  className="p-2 rounded-xl bg-gray-50 hover:bg-[#FFF0F2] border border-gray-100 hover:border-red-200 text-gray-800 hover:text-[#E4002B] text-xs font-bold flex flex-col items-center justify-center transition-all"
+                  className="p-2.5 rounded-xl bg-gray-50 hover:bg-[#FFF0F2] border border-gray-100 hover:border-red-200 text-gray-800 hover:text-[#E4002B] text-xs font-bold flex flex-col items-center justify-center transition-all active:scale-95"
                 >
-                  <span className="text-[10px] text-gray-400">{contact.label}</span>
+                  <span className="text-[10px] text-gray-400 mb-0.5">{contact.label}</span>
                   <span className="tracking-wide">{contact.number}</span>
                 </a>
               ))}
             </div>
           </div>
 
-          <p className="text-[11px] text-gray-400 mt-4">
+          <p className="text-[11px] text-gray-500 mt-4 font-bold">
             صفحة الفيسبوك: {RESTAURANT_INFO.facebook}
           </p>
-          <p className="text-[10px] text-gray-400 mt-1">
+          <p className="text-[10px] text-gray-400 mt-1.5">
             جميع الحقوق محفوظة &copy; {new Date().getFullYear()} {RESTAURANT_INFO.name}
           </p>
         </section>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ArrowRight, Minus, Plus, Trash2, MapPin, ShoppingBag, Send } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import useMenuData from "../hooks/useMenuData";
@@ -8,6 +8,10 @@ import { navigate } from "../lib/router";
 import BottomNav from "./BottomNav";
 
 export default function CartPage() {
+  // Scroll to top when cart page opens
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
   const { entries, setQty, setNote, remove, clear } = useCart();
   const { items: menuItems } = useMenuData();
   const zones = useDeliveryZones();
