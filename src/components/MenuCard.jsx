@@ -1,62 +1,120 @@
 import { memo, useState } from "react";
 import { Plus, Heart, Star } from "lucide-react";
 
-// ─── Food Image Mapping ────────────────────────────────────────
-// Maps keywords in item titles/categories to real food photos.
-// Falls back to categorized emojis for items without specific images.
-const FOOD_IMAGES = {
-  // Shawarma sandwiches
-  "شاورما فراخ": "/food-shawarma-chicken.jpg",
-  "شاورما دجاج": "/food-shawarma-chicken.jpg",
-  "شاورما لحم": "/food-shawarma-beef.jpg",
-  "شاورما لحمة": "/food-shawarma-beef.jpg",
-  "شاورما ميكس": "/food-shawarma-beef.jpg",
-  "شاورما كريسبي": "/food-crispy.jpg",
-  // Crispy & Zinger
-  "كريسبي": "/food-crispy.jpg",
-  "زنجر": "/food-crispy.jpg",
-  // Crepes with shawarma
-  "كريب شاورما دجاج": "/food-shawarma-chicken.jpg",
-  "كريب شاورما لحمة": "/food-shawarma-beef.jpg",
-  "كريب شاورما ميكس": "/food-shawarma-beef.jpg",
-  "كريب كريسبي": "/food-crispy.jpg",
-  "كريب زنجر": "/food-crispy.jpg",
-  // Fatta dishes
-  "فتة شاورما دجاج": "/food-shawarma-chicken.jpg",
-  "فتة شاورما لحمة": "/food-shawarma-beef.jpg",
-  "فتة شاورما ميكس": "/food-shawarma-beef.jpg",
-  "فتة شيش طاووق": "/food-shawarma-chicken.jpg",
-  // Shish Tawook
-  "شيش طاووق": "/food-shawarma-chicken.jpg",
-  // Weight shawarma
-  "كيلو شاورما فراخ": "/food-shawarma-chicken.jpg",
-  "كيلو شاورما لحمة": "/food-shawarma-beef.jpg",
-  // Arabic dishes
-  "عربي مقطع": "/food-shawarma-beef.jpg",
-  "عربي عائلي": "/food-shawarma-beef.jpg",
+// ─── Real Food Photography Mapping ──────────────────────────────
+// Maps menu items & categories directly to authentic Syrian food photos.
+const FOOD_PHOTOS = {
+  shawarmaChicken: "/food-shawarma-chicken.jpg",
+  shawarmaBeef: "/food-shawarma-beef.jpg",
+  crispy: "/food-crispy.jpg",
+  crepe: "/food-crepe.jpg",
+  fatta: "/food-fatta.jpg",
+  arabicPlatter: "/food-arabic.jpg",
+  pizza: "/food-pizza.jpg",
+  pasta: "/food-pasta.jpg",
+  chicken: "/food-chicken.jpg",
+  skewer: "/shawarma-skewer.jpg",
 };
 
 function getItemImage(item) {
-  const title = (item.title || "").trim();
+  if (!item) return null;
+  const t = (item.title || "").toLowerCase();
+  const c = (item.category || "").toLowerCase();
 
-  // 1. Try exact title match first
-  if (FOOD_IMAGES[title]) return FOOD_IMAGES[title];
-
-  // 2. Try partial match on title keywords
-  for (const [keyword, imgPath] of Object.entries(FOOD_IMAGES)) {
-    if (title.includes(keyword)) return imgPath;
+  // 1. Pizza Category or Title
+  if (c.includes("بيتزا") || t.includes("بيتزا")) {
+    return FOOD_PHOTOS.pizza;
   }
 
-  // 3. No image match — return null (will use emoji fallback)
-  return null;
+  // 2. Crepes Category or Title
+  if (c.includes("كريب") || t.includes("كريب")) {
+    return FOOD_PHOTOS.crepe;
+  }
+
+  // 3. Fatta Dishes
+  if (t.includes("فتة") || t.includes("فته") || c.includes("فتات")) {
+    return FOOD_PHOTOS.fatta;
+  }
+
+  // 4. Arabic Platters (عربي مقطع / عربي عائلي)
+  if (t.includes("عربي") || t.includes("مقطع")) {
+    return FOOD_PHOTOS.arabicPlatter;
+  }
+
+  // 5. Pasta & Negresco
+  if (
+    c.includes("مكرون") ||
+    t.includes("مكرون") ||
+    t.includes("نجرسكو") ||
+    t.includes("بشاميل") ||
+    t.includes("وايت صوص")
+  ) {
+    return FOOD_PHOTOS.pasta;
+  }
+
+  // 6. Grilled / Rotisserie Chicken
+  if (
+    c.includes("شواية") ||
+    c.includes("شوايه") ||
+    t.includes("مشوية") ||
+    t.includes("مشويه") ||
+    t.includes("شواية") ||
+    t.includes("فرخة") ||
+    t.includes("فرخه")
+  ) {
+    return FOOD_PHOTOS.chicken;
+  }
+
+  // 7. Shawarma by Weight (كيلو / نصف / ربع)
+  if (c.includes("أوزان") || c.includes("اوزان") || t.includes("كيلو")) {
+    return FOOD_PHOTOS.skewer;
+  }
+
+  // 8. Western Meals (وجبات الغربي)
+  if (c.includes("غربي") || c.includes("وجبات")) {
+    if (t.includes("طاووق") || t.includes("شيش")) return FOOD_PHOTOS.shawarmaChicken;
+    return FOOD_PHOTOS.crispy;
+  }
+
+  // 9. Crispy & Zinger Sandwiches
+  if (t.includes("كريسبي") || t.includes("زنجر")) {
+    return FOOD_PHOTOS.crispy;
+  }
+
+  // 10. Shish Tawook
+  if (t.includes("شيش") || t.includes("طاووق")) {
+    return FOOD_PHOTOS.shawarmaChicken;
+  }
+
+  // 11. Shawarma Sandwiches (Beef vs Chicken)
+  if (t.includes("لحم") || t.includes("لحمة") || t.includes("لحمه") || t.includes("ميكس")) {
+    return FOOD_PHOTOS.shawarmaBeef;
+  }
+
+  if (t.includes("شاورما") || t.includes("فراخ") || t.includes("دجاج")) {
+    return FOOD_PHOTOS.shawarmaChicken;
+  }
+
+  // 12. Appetizers & Sides & Extras
+  if (
+    c.includes("مقبلات") ||
+    c.includes("إضاف") ||
+    c.includes("اضاف") ||
+    t.includes("بطاطس") ||
+    t.includes("تومية") ||
+    t.includes("سمبوسة")
+  ) {
+    return FOOD_PHOTOS.arabicPlatter;
+  }
+
+  return FOOD_PHOTOS.shawarmaChicken;
 }
 
-// Categorized emojis for items without real images
+// Fallback categorized emojis for appetizing visuals
 function getItemEmoji(item) {
   const t = (item.title || "").toLowerCase();
   const c = (item.category || "").toLowerCase();
 
-  if (t.includes("برجر") || c.includes("برجر")) return "🍔";
   if (t.includes("بيتزا") || c.includes("بيتزا")) return "🍕";
   if (t.includes("كريب") || c.includes("كريب")) return "🥞";
   if (t.includes("شاورما") || c.includes("شاورما")) return "🌯";
@@ -65,13 +123,6 @@ function getItemEmoji(item) {
   if (t.includes("فتة") || c.includes("فتات")) return "🍚";
   if (t.includes("مكرونة") || c.includes("مكرونات")) return "🍝";
   if (c.includes("مقبلات") || t.includes("تومية")) return "🧄";
-  if (t.includes("سمبوسة")) return "🥟";
-  if (t.includes("أرز") || t.includes("رز")) return "🍚";
-  if (t.includes("سلطة")) return "🥗";
-  if (t.includes("طحينة")) return "🫙";
-  if (t.includes("مخلل")) return "🥒";
-  if (t.includes("عيش")) return "🫓";
-  if (t.includes("محمره")) return "🌶️";
   return "🍲";
 }
 
@@ -91,12 +142,13 @@ function MenuCard({ item, index, onAdd }) {
   const [selectedSize, setSelectedSize] = useState("M");
   const [imgError, setImgError] = useState(false);
   const hasSizes = item.priceM != null && item.priceL != null;
+
   const foodImage = getItemImage(item);
   const emoji = getItemEmoji(item);
 
   const numId = getNumericId(item.id);
-  const rating = (4.6 + ((numId * 7) % 4) * 0.1).toFixed(1);
-  const reviewCount = 60 + ((numId * 17) % 190);
+  const rating = (4.7 + ((numId * 7) % 3) * 0.1).toFixed(1);
+  const reviewCount = 80 + ((numId * 19) % 210);
 
   function handleAdd() {
     if (hasSizes) {
@@ -107,36 +159,39 @@ function MenuCard({ item, index, onAdd }) {
   }
 
   return (
-    <article className="bg-white rounded-2xl p-3 shadow-xs border border-gray-100/90 flex flex-col justify-between hover:shadow-md transition-all duration-200 relative group">
-      {/* ─── Top Favorite Heart ─── */}
-      <div className="flex items-center justify-end mb-1">
+    <article className="bg-white rounded-2xl p-2.5 sm:p-3 shadow-xs border border-gray-100/90 flex flex-col justify-between hover:shadow-md transition-all duration-200 relative group">
+      {/* ─── Real Food Visual with Floating Heart ──── */}
+      <div className="relative w-full aspect-[4/3] rounded-xl sm:rounded-2xl mb-2.5 overflow-hidden bg-gradient-to-b from-orange-50/50 to-gray-50 shadow-inner group-hover:shadow-sm transition-all">
+        {foodImage && !imgError ? (
+          <img
+            src={foodImage}
+            alt={item.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-4xl">
+            <span className="select-none filter drop-shadow-xs">{emoji}</span>
+          </div>
+        )}
+
+        {/* Top Favorite Heart (Floating on Image) */}
         <button
-          onClick={() => setIsFavorite(!isFavorite)}
-          className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
-            isFavorite ? "text-red-500 bg-red-50" : "text-gray-300 hover:text-red-400 bg-gray-50"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsFavorite(!isFavorite);
+          }}
+          className={`absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-200 shadow-xs ${
+            isFavorite
+              ? "text-red-500 bg-white/95 shadow-red-500/20 scale-105"
+              : "text-gray-600 hover:text-red-500 bg-white/80 hover:bg-white"
           }`}
           aria-label="إضافة للمفضلة"
         >
           <Heart className={`w-3.5 h-3.5 ${isFavorite ? "fill-current" : ""}`} />
         </button>
       </div>
-
-      {/* ─── Center Visual: Real Image or Emoji Fallback ── */}
-      {foodImage && !imgError ? (
-        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl mx-auto mb-2 overflow-hidden shadow-sm group-hover:scale-105 transition-transform">
-          <img
-            src={foodImage}
-            alt={item.title}
-            className="w-full h-full object-cover"
-            loading="lazy"
-            onError={() => setImgError(true)}
-          />
-        </div>
-      ) : (
-        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-b from-orange-50/70 to-[#FFF0F2]/60 mx-auto flex items-center justify-center text-3xl sm:text-4xl mb-2 shadow-inner group-hover:scale-105 transition-transform">
-          <span className="select-none filter drop-shadow-xs">{emoji}</span>
-        </div>
-      )}
 
       {/* ─── Product Title & Description ───────────── */}
       <div className="mb-2 text-right">
@@ -233,4 +288,3 @@ function MenuCard({ item, index, onAdd }) {
 }
 
 export default memo(MenuCard);
-

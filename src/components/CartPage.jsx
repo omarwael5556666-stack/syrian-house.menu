@@ -8,10 +8,11 @@ import { navigate } from "../lib/router";
 import BottomNav from "./BottomNav";
 
 export default function CartPage() {
-  // Scroll to top when cart page opens
+  // Scroll to top immediately when cart page opens
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, []);
+
   const { entries, setQty, setNote, remove, clear } = useCart();
   const { items: menuItems } = useMenuData();
   const zones = useDeliveryZones();
@@ -99,7 +100,7 @@ export default function CartPage() {
 
   return (
     <div className="app-shell flex flex-col min-h-screen">
-      <div className="flex-1 px-4 pt-4 pb-28">
+      <div className="flex-1 px-4 pt-4 pb-36">
         {/* ─── Top Bar ───────────────────────────────── */}
         <div className="flex items-center gap-3 mb-5">
           <button

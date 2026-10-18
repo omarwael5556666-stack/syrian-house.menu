@@ -1,4 +1,4 @@
-import { StrictMode, lazy, Suspense } from "react";
+import { StrictMode, lazy, Suspense, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
@@ -19,6 +19,10 @@ function PageLoading() {
 /** Reactive route switch with code-splitting */
 function Routes() {
   const path = usePath();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [path]);
 
   if (path.startsWith("/admin")) {
     return (

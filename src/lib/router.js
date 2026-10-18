@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 export function navigate(path) {
   window.history.pushState({}, "", path);
   window.dispatchEvent(new PopStateEvent("popstate"));
+  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 }
 
 export function usePath() {
