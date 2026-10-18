@@ -1,66 +1,160 @@
-import { memo } from "react";
-import { Tag } from "lucide-react";
+import { memo, useState } from "react";
+import { Plus, Heart, Star } from "lucide-react";
+
+// Categorized emojis for appetizing visuals
+function getItemEmoji(item) {
+  const t = (item.title || "").toLowerCase();
+  const c = (item.category || "").toLowerCase();
+
+  if (t.includes("برجر") || c.includes("برجر")) return "🍔";
+  if (t.includes("بيتزا") || c.includes("بيتزا")) return "🍕";
+  if (t.includes("كريب") || c.includes("كريب")) return "🥞";
+  if (t.includes("شاورما") || c.includes("شاورما")) return "🌯";
+  if (t.includes("فراخ") || t.includes("دجاج") || c.includes("شواية")) return "🍗";
+  if (t.includes("بطاطس") || c.includes("غربي")) return "🍟";
+  if (t.includes("فتة") || c.includes("فتات")) return "🍚";
+  if (t.includes("مكرونة") || c.includes("مكرونات")) return "🍝";
+  if (c.includes("مقبلات") || t.includes("تومية")) return "🧄";
+  return "🍲";
+}
+
+function getNumericId(id) {
+  if (typeof id === "number" && !Number.isNaN(id)) return id;
+  const s = String(id || "");
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = (h << 5) - h + s.charCodeAt(i);
+    h |= 0;
+  }
+  return Math.abs(h);
+}
 
 function MenuCard({ item, index, onAdd }) {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedSize, setSelectedSize] = useState("M");
   const hasSizes = item.priceM != null && item.priceL != null;
-  const staggerClass = `stagger-${(index % 8) + 1}`;
+  const emoji = getItemEmoji(item);
+
+  const numId = getNumericId(item.id);
+  const rating = (4.6 + ((numId * 7) % 4) * 0.1).toFixed(1);
+  const reviewCount = 60 + ((numId * 17) % 190);
+
+  function handleAdd() {
+    if (hasSizes) {
+      onAdd(item.id, selectedSize);
+    } else {
+      onAdd(item.id, null);
+    }
+  }
 
   return (
-    <article
-      className={`glass-card rounded-2xl p-5 flex flex-col justify-between opacity-0 animate-slide-up ${staggerClass}`}
-    >
-      {/* Top Row: Title + NEW Badge */}
-      <div className="flex items-start justify-between gap-3 mb-2">
-        <h3 className="text-base sm:text-lg font-bold text-gray-100 leading-relaxed flex-1">
-          {item.title}
-        </h3>
-        {item.isNew && (
-          <span className="new-badge flex items-center gap-1 mt-1">
-            جديد
-          </span>
-        )}
+    <article className="bg-white rounded-2xl p-3 shadow-xs border border-gray-100/90 flex flex-col justify-between hover:shadow-md transition-all duration-200 relative group">
+      {/* ─── Top Favorite Heart (No badges as requested) ─── */}
+      <div className="flex items-center justify-end mb-1">
+        <button
+          onClick={() => setIsFavorite(!isFavorite)}
+          className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+            isFavorite ? "text-red-500 bg-red-50" : "text-gray-300 hover:text-red-400 bg-gray-50"
+          }`}
+          aria-label="إضافة للمفضلة"
+        >
+          <Heart className={`w-3.5 h-3.5 ${isFavorite ? "fill-current" : ""}`} />
+        </button>
       </div>
 
-      {/* Description */}
-      {item.description && (
-        <p className="text-sm text-gray-400 leading-relaxed mb-4 line-clamp-2">
-          {item.description}
-        </p>
-      )}
+      {/* ─── Center Visual Food Emoji ──────────────── */}
+      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-b from-orange-50/70 to-[#FFF0F2]/60 mx-auto flex items-center justify-center text-3xl sm:text-4xl mb-2 shadow-inner group-hover:scale-105 transition-transform">
+        <span className="select-none filter drop-shadow-xs">{emoji}</span>
+      </div>
 
-      {/* Spacer */}
-      {!item.description && <div className="flex-1 min-h-[8px]" />}
+      {/* ─── Product Title & Description ───────────── */}
+      <div className="mb-2 text-right">
+        <h3 className="font-black text-gray-900 text-xs sm:text-sm leading-snug line-clamp-1">
+          {item.title}
+        </h3>
 
-      {/* Footer */}
-      <div className="mt-auto pt-3 border-t border-white/5 space-y-3">
-        <div className="flex items-center gap-1.5 text-gray-500">
-          <Tag className="w-3.5 h-3.5" />
-          <span className="text-xs">{item.category}</span>
+        {item.description ? (
+          <p className="text-[10px] sm:text-[11px] text-gray-500 leading-relaxed mt-0.5 line-clamp-2 min-h-[28px]">
+            {item.description}
+          </p>
+        ) : (
+          <p className="text-[10px] sm:text-[11px] text-gray-400 mt-0.5 line-clamp-1 min-h-[28px]">
+            {item.category}
+          </p>
+        )}
+
+        {/* Rating row */}
+        <div className="flex items-center gap-1 mt-1 text-[10px] text-gray-500 font-bold">
+          <Star className="w-3 h-3 text-amber-400 fill-current" />
+          <span>{rating}</span>
+          <span className="text-gray-400 font-normal">({reviewCount}+)</span>
         </div>
+      </div>
 
+      {/* ─── Bottom Price & Add Action ─────────────── */}
+      <div className="pt-2 border-t border-gray-100 mt-auto">
         {hasSizes ? (
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              ["M", item.priceM],
-              ["L", item.priceL],
-            ].map(([size, price]) => (
+          <div>
+            {/* Size Selector Tabs */}
+            <div className="flex items-center justify-between gap-1 mb-2 bg-gray-100/90 p-0.5 rounded-lg text-[10px] font-black">
               <button
-                key={size}
-                onClick={() => onAdd(item.id, size)}
-                className="h-10 rounded-xl bg-gradient-to-l from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 active:scale-[0.96] transition-all duration-150 text-white text-sm font-extrabold shadow-md shadow-black/30"
-                title={`أضف ${item.title} حجم ${size} للسلة`}
+                type="button"
+                onClick={() => setSelectedSize("M")}
+                className={`flex-1 py-1 rounded-md transition-all ${
+                  selectedSize === "M"
+                    ? "bg-white text-[#E4002B] shadow-xs"
+                    : "text-gray-500 hover:text-gray-800"
+                }`}
               >
-                أضف {size} • {price} ج.م
+                M: {item.priceM} ج
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => setSelectedSize("L")}
+                className={`flex-1 py-1 rounded-md transition-all ${
+                  selectedSize === "L"
+                    ? "bg-white text-[#E4002B] shadow-xs"
+                    : "text-gray-500 hover:text-gray-800"
+                }`}
+              >
+                L: {item.priceL} ج
+              </button>
+            </div>
+
+            {/* Price and Add button */}
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-[9px] text-gray-400 block leading-none mb-0.5">السعر</span>
+                <span className="text-xs sm:text-sm font-black text-gray-900 tabular-nums">
+                  {selectedSize === "M" ? item.priceM : item.priceL} ج.م
+                </span>
+              </div>
+              <button
+                onClick={handleAdd}
+                className="w-8 h-8 rounded-full bg-[#E4002B] hover:bg-[#C8102E] text-white flex items-center justify-center shadow-md active:scale-90 transition-all"
+                title="أضف للسلة"
+              >
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            </div>
           </div>
         ) : (
-          <button
-            onClick={() => onAdd(item.id, null)}
-            className="w-full h-10 rounded-xl bg-gradient-to-l from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 active:scale-[0.97] transition-all duration-150 text-white font-extrabold text-sm sm:text-base shadow-md shadow-black/30"
-          >
-            أضف للسلة • {item.price} ج.م
-          </button>
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[9px] text-gray-400 block leading-none mb-0.5">السعر</span>
+              <span className="text-xs sm:text-sm font-black text-gray-900 tabular-nums">
+                {item.price} ج.م
+              </span>
+            </div>
+
+            <button
+              onClick={handleAdd}
+              className="w-8 h-8 rounded-full bg-[#E4002B] hover:bg-[#C8102E] text-white flex items-center justify-center shadow-md active:scale-90 transition-all"
+              title={`أضف ${item.title} للسلة`}
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+            </button>
+          </div>
         )}
       </div>
     </article>
@@ -68,4 +162,3 @@ function MenuCard({ item, index, onAdd }) {
 }
 
 export default memo(MenuCard);
-

@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { ArrowRight, Minus, Plus, Trash2, MapPin } from "lucide-react";
+import { ArrowRight, Minus, Plus, Trash2, MapPin, ShoppingBag, Send } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import useMenuData from "../hooks/useMenuData";
 import useDeliveryZones from "../hooks/useDeliveryZones";
 import { RESTAURANT_INFO } from "../data/menuData";
 import { navigate } from "../lib/router";
+import BottomNav from "./BottomNav";
 
 export default function CartPage() {
   const { entries, setQty, setNote, remove, clear } = useCart();
@@ -18,22 +19,19 @@ export default function CartPage() {
   const [quesnaDetail, setQuesnaDetail] = useState("");
   const [orderNote, setOrderNote] = useState("");
 
-  // Resolve live item data; drop items that disappeared or became unavailable.
+  // Resolve live item data
   const lines = useMemo(() => {
     const byId = new Map(menuItems.map((i) => [i.id, i]));
     const live = [];
-    const droppedTitles = [];
     for (const e of entries) {
       const item = byId.get(e.id);
       if (item) {
         const price =
           e.size === "M" ? item.priceM : e.size === "L" ? item.priceL : item.price;
         live.push({ ...e, item, price });
-      } else if (!e.id.startsWith("static-")) {
-        droppedTitles.push(e.id);
       }
     }
-    return { live, dropped: droppedTitles.length };
+    return { live };
   }, [entries, menuItems]);
 
   const subtotal = lines.live.reduce((sum, l) => sum + l.price * l.qty, 0);
@@ -96,267 +94,281 @@ export default function CartPage() {
   }
 
   return (
-    <div className="relative z-10 min-h-screen pb-32">
-      <div className="max-w-xl mx-auto px-4 pt-6">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
+    <div className="app-shell flex flex-col min-h-screen">
+      <div className="flex-1 px-4 pt-4 pb-28">
+        {/* ─── Top Bar ───────────────────────────────── */}
+        <div className="flex items-center gap-3 mb-5">
           <button
             onClick={() => navigate("/")}
-            className="w-9 h-9 rounded-full bg-dark-800 border border-brand-500/20 flex items-center justify-center text-brand-400 hover:bg-brand-500/10 transition-colors duration-150"
+            className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-700 hover:text-[#E4002B] hover:bg-gray-50 transition-colors"
             aria-label="رجوع للمينيو"
           >
             <ArrowRight className="w-5 h-5" />
           </button>
-          <h1 className="text-xl font-extrabold gradient-text">سلة الطلبات</h1>
+          <div>
+            <h1 className="text-xl font-black text-gray-900">سلة الطلبات</h1>
+            <p className="text-[11px] font-bold text-gray-400">
+              {lines.live.length} أصناف في السلة
+            </p>
+          </div>
         </div>
 
         {lines.live.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-gray-400 mb-4">السلة فاضية</p>
+          <div className="text-center py-16 bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4 text-[#E4002B]">
+              <ShoppingBag className="w-8 h-8" />
+            </div>
+            <h3 className="text-base font-black text-gray-900 mb-1">السلة فارغة</h3>
+            <p className="text-xs text-gray-400 mb-5">
+              لم تقم بإضافة أي وجبة أو ساندوتش إلى السلة بعد
+            </p>
             <button
               onClick={() => navigate("/")}
-              className="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-white font-bold text-sm transition-colors duration-150"
+              className="px-6 py-2.5 rounded-full bg-[#E4002B] hover:bg-[#C8102E] text-white font-black text-xs shadow-md transition-all active:scale-95"
             >
-              تصفح المينيو
+              تصفح قائمة الطعام
             </button>
           </div>
         ) : (
           <>
-            {/* Items */}
-            <ul className="space-y-3 mb-8">
+            {/* ─── Cart Items List ───────────────────── */}
+            <div className="space-y-3 mb-6">
               {lines.live.map((l) => (
-                <li
+                <div
                   key={l.key}
-                  className="glass-card rounded-2xl p-4"
+                  className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
                 >
-                  <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <h3 className="font-bold text-gray-100 text-sm sm:text-base leading-snug">
+                      <h3 className="font-black text-gray-900 text-sm leading-snug">
                         {l.item.title}
                         {l.size && (
-                          <span className="size-badge inline-block ms-2 align-middle">
-                            {l.size}
+                          <span className="ms-2 inline-block text-[11px] font-black bg-red-50 text-[#E4002B] px-2 py-0.5 rounded-md">
+                            حجم {l.size}
                           </span>
                         )}
                       </h3>
-                      <p className="text-xs text-gray-500 mt-0.5">{l.price} ج.م للوحدة</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{l.price} ج.م للقطعة</p>
                     </div>
+
                     <button
                       onClick={() => remove(l.key)}
                       aria-label={`إزالة ${l.item.title}`}
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors duration-150 shrink-0"
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center justify-between gap-3 pt-2 border-t border-gray-50">
+                    {/* Quantity controls */}
                     <div
-                      className="flex items-center gap-1 bg-dark-950/70 rounded-full p-1 border border-white/5"
+                      className="flex items-center gap-1 bg-gray-100/80 rounded-full p-1"
                       dir="ltr"
                     >
                       <button
                         onClick={() => setQty(l.key, l.qty - 1)}
-                        aria-label="تقليل الكمية"
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-brand-400 hover:bg-brand-500/20 active:scale-90 transition-all duration-150"
+                        className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-gray-800 hover:text-[#E4002B] shadow-xs active:scale-90 transition-all"
                       >
                         <Minus className="w-3.5 h-3.5" />
                       </button>
-                      <span className="w-7 text-center font-bold text-sm tabular-nums">
+                      <span className="w-7 text-center font-black text-sm text-gray-900 tabular-nums">
                         {l.qty}
                       </span>
                       <button
                         onClick={() => setQty(l.key, l.qty + 1)}
-                        aria-label="زيادة الكمية"
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-brand-400 hover:bg-brand-500/20 active:scale-90 transition-all duration-150"
+                        className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-gray-800 hover:text-[#E4002B] shadow-xs active:scale-90 transition-all"
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                    <span className="text-sm font-bold text-brand-300 tabular-nums">
+
+                    <span className="text-sm font-black text-[#E4002B] tabular-nums">
                       {l.price * l.qty} ج.م
                     </span>
                   </div>
 
+                  {/* Note input */}
                   <input
                     type="text"
                     value={l.note}
                     onChange={(e) => setNote(l.key, e.target.value)}
-                    placeholder="ملاحظات لهذا الصنف… مثال: من غير مخلل"
-                    className="mt-3 w-full h-9 px-3 rounded-xl bg-dark-950/70 border border-white/5 text-xs text-gray-200 placeholder:text-gray-600 outline-none focus:border-brand-500/50 transition-colors duration-150"
+                    placeholder="ملاحظات خاصة... مثال: زيادة تومية، بدون خيار"
+                    className="mt-2.5 w-full h-8 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-800 placeholder:text-gray-400 outline-none focus:border-[#E4002B] focus:bg-white transition-colors"
                   />
-                </li>
+                </div>
               ))}
-            </ul>
-
-            {/* Customer name */}
-            <div className="mb-4">
-              <label htmlFor="cust-name" className="block text-xs font-bold text-gray-400 mb-1">
-                الاسم (اختياري)
-              </label>
-              <input
-                id="cust-name"
-                type="text"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="اسمك"
-                className="w-full h-11 px-4 rounded-xl bg-dark-800/80 border border-white/10 text-sm outline-none focus:border-brand-500/60 transition-colors duration-150"
-              />
             </div>
 
-            {/* Phone numbers */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            {/* ─── Customer Details Form ──────────────── */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3 mb-4">
+              <h4 className="text-xs font-black text-gray-700 pb-1 border-b border-gray-100">
+                بيانات التوصيل
+              </h4>
+
               <div>
-                <label htmlFor="cust-phone" className="block text-xs font-bold text-gray-400 mb-1">
-                  رقم الموبايل *
+                <label htmlFor="cust-name" className="block text-[11px] font-bold text-gray-500 mb-1">
+                  الاسم (اختياري)
                 </label>
                 <input
-                  id="cust-phone"
-                  type="tel"
-                  inputMode="tel"
-                  dir="ltr"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="01xxxxxxxxx"
-                  autoComplete="tel"
-                  className={`w-full h-11 px-4 rounded-xl bg-dark-800/80 border text-sm outline-none transition-colors duration-150 ${
-                    phone && !phoneOk
-                      ? "border-red-400/70"
-                      : "border-white/10 focus:border-brand-500/60"
-                  }`}
-                />
-                {phone && !phoneOk && (
-                  <p className="text-[11px] text-red-400 mt-1">
-                    اكتب رقم صحيح (10 أرقام على الأقل)
-                  </p>
-                )}
-              </div>
-              <div>
-                <label htmlFor="cust-phone2" className="block text-xs font-bold text-gray-400 mb-1">
-                  رقم إضافي (اختياري)
-                </label>
-                <input
-                  id="cust-phone2"
-                  type="tel"
-                  inputMode="tel"
-                  dir="ltr"
-                  value={phone2}
-                  onChange={(e) => setPhone2(e.target.value)}
-                  placeholder="01xxxxxxxxx"
-                  autoComplete="off"
-                  className="w-full h-11 px-4 rounded-xl bg-dark-800/80 border border-white/10 text-sm outline-none focus:border-brand-500/60 transition-colors duration-150"
-                />
-              </div>
-            </div>
-
-            {/* Delivery zone */}
-            <div className="mb-4">
-              <label htmlFor="cust-zone" className="block text-xs font-bold text-gray-400 mb-1">
-                منطقة التوصيل *
-              </label>
-              <select
-                id="cust-zone"
-                value={zoneName}
-                onChange={(e) => setZoneName(e.target.value)}
-                required
-                className="w-full h-11 px-3 rounded-xl bg-dark-800/80 border border-white/10 text-sm outline-none focus:border-brand-500/60 transition-colors duration-150 appearance-none"
-              >
-                <option value="">اختر منطقتك…</option>
-                {zones.map((z) => (
-                  <option key={z.location} value={z.location}>
-                    {z.location} — {z.fee} ج.م
-                  </option>
-                ))}
-              </select>
-              <p className="text-[11px] text-gray-600 mt-1">
-                المنطقة اللي تختارها هتتنسخ تلقائياً في رسالة الواتساب مع سعر
-                التوصيل
-              </p>
-            </div>
-
-            {/* Exact location in Quesna - user writes their detailed address */}
-            {isQuesna && (
-              <div className="mb-4 animate-fade-in">
-                <label
-                  htmlFor="cust-quesna-detail"
-                  className="flex items-center gap-1.5 text-xs font-bold text-brand-300 mb-1"
-                >
-                  <MapPin className="w-3.5 h-3.5 text-brand-400" />
-                  <span>فين بالضبط في قويسنا؟ *</span>
-                </label>
-                <input
-                  id="cust-quesna-detail"
+                  id="cust-name"
                   type="text"
-                  value={quesnaDetail}
-                  onChange={(e) => setQuesnaDetail(e.target.value)}
-                  placeholder="اكتب العنوان بالتفصيل (اسم الشارع، علامة مميزة، رقم العمارة…)"
-                  required
-                  className="w-full h-11 px-4 rounded-xl bg-dark-800/80 border border-brand-500/40 text-sm text-gray-100 placeholder:text-gray-500 outline-none focus:border-brand-500 transition-colors duration-150"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="اكتب اسمك"
+                  className="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#E4002B] focus:bg-white"
                 />
               </div>
-            )}
 
-            {/* General order note */}
-            <div className="mb-6">
-              <label htmlFor="order-note" className="block text-xs font-bold text-gray-400 mb-1">
-                ملاحظات عامة (اختياري)
-              </label>
-              <textarea
-                id="order-note"
-                rows={2}
-                value={orderNote}
-                onChange={(e) => setOrderNote(e.target.value)}
-                placeholder="مثال: الاتصال قبل الوصول، العمارة 5 الدور 2…"
-                className="w-full px-4 py-2 rounded-xl bg-dark-800/80 border border-white/10 text-sm outline-none focus:border-brand-500/60 transition-colors duration-150 resize-none"
-              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label htmlFor="cust-phone" className="block text-[11px] font-bold text-gray-500 mb-1">
+                    رقم الموبايل *
+                  </label>
+                  <input
+                    id="cust-phone"
+                    type="tel"
+                    inputMode="tel"
+                    dir="ltr"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="01xxxxxxxxx"
+                    className={`w-full h-10 px-3 rounded-xl bg-gray-50 border text-xs text-gray-900 outline-none ${
+                      phone && !phoneOk
+                        ? "border-red-400 bg-red-50/30"
+                        : "border-gray-200 focus:border-[#E4002B] focus:bg-white"
+                    }`}
+                  />
+                  {phone && !phoneOk && (
+                    <p className="text-[10px] text-red-500 mt-1">
+                      اكتب رقم موبايل صحيح (10-14 رقم)
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="cust-phone2" className="block text-[11px] font-bold text-gray-500 mb-1">
+                    رقم إضافي (اختياري)
+                  </label>
+                  <input
+                    id="cust-phone2"
+                    type="tel"
+                    inputMode="tel"
+                    dir="ltr"
+                    value={phone2}
+                    onChange={(e) => setPhone2(e.target.value)}
+                    placeholder="01xxxxxxxxx"
+                    className="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#E4002B] focus:bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="cust-zone" className="block text-[11px] font-bold text-gray-500 mb-1">
+                  منطقة التوصيل *
+                </label>
+                <select
+                  id="cust-zone"
+                  value={zoneName}
+                  onChange={(e) => setZoneName(e.target.value)}
+                  className="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#E4002B] focus:bg-white"
+                >
+                  <option value="">اختر منطقتك أو قريتك...</option>
+                  {zones.map((z) => (
+                    <option key={z.location} value={z.location}>
+                      {z.location} — رسوم {z.fee} ج.م
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {isQuesna && (
+                <div className="pt-1">
+                  <label
+                    htmlFor="cust-quesna-detail"
+                    className="flex items-center gap-1 text-[11px] font-bold text-[#E4002B] mb-1"
+                  >
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>العنوان بالتفصيل في قويسنا *</span>
+                  </label>
+                  <input
+                    id="cust-quesna-detail"
+                    type="text"
+                    value={quesnaDetail}
+                    onChange={(e) => setQuesnaDetail(e.target.value)}
+                    placeholder="اسم الشارع، رقم العمارة، علامة مميزة..."
+                    className="w-full h-10 px-3 rounded-xl bg-white border border-[#E4002B]/40 text-xs text-gray-900 outline-none focus:border-[#E4002B]"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="order-note" className="block text-[11px] font-bold text-gray-500 mb-1">
+                  ملاحظات عامة على الأوردر (اختياري)
+                </label>
+                <textarea
+                  id="order-note"
+                  rows={2}
+                  value={orderNote}
+                  onChange={(e) => setOrderNote(e.target.value)}
+                  placeholder="أي طلبات خاصة بطريقة التوصيل أو الاستلام..."
+                  className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#E4002B] focus:bg-white resize-none"
+                />
+              </div>
             </div>
 
-            {/* Totals */}
-            <div className="glass-card rounded-2xl p-4 space-y-2 mb-4 text-sm">
-              <div className="flex justify-between text-gray-400">
+            {/* ─── Bill Summary ──────────────────────── */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2 mb-4 text-xs font-bold">
+              <div className="flex justify-between text-gray-500">
                 <span>مجموع الأصناف</span>
-                <span className="tabular-nums">{subtotal} ج.م</span>
+                <span className="text-gray-900 tabular-nums">{subtotal} ج.م</span>
               </div>
-              <div className="flex justify-between text-gray-400">
-                <span>التوصيل</span>
-                <span className="tabular-nums">
+              <div className="flex justify-between text-gray-500">
+                <span>رسوم التوصيل</span>
+                <span className="text-gray-900 tabular-nums">
                   {zone ? `${deliveryFee} ج.م` : "اختر المنطقة"}
                 </span>
               </div>
-              <div className="flex justify-between font-extrabold text-base text-brand-400 pt-2 border-t border-white/10">
-                <span>الإجمالي</span>
-                <span className="tabular-nums">{zone ? `${total} ج.م` : `${subtotal}+ `}</span>
+              <div className="flex justify-between font-black text-sm text-[#E4002B] pt-2 border-t border-gray-100">
+                <span>الإجمالي النهائي</span>
+                <span className="tabular-nums">
+                  {zone ? `${total} ج.م` : `${subtotal} ج.م + التوصيل`}
+                </span>
               </div>
             </div>
 
-            {/* Send */}
+            {/* ─── WhatsApp Order Button ─────────────── */}
             <button
               onClick={sendToWhatsapp}
               disabled={!zone || lines.live.length === 0 || !phoneOk || !quesnaOk}
-              className="w-full h-12 rounded-2xl bg-gradient-to-l from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.99] transition-all duration-150 text-white font-extrabold text-base shadow-lg shadow-black/30"
+              className="w-full h-13 py-3 rounded-2xl bg-[#E4002B] hover:bg-[#C8102E] disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-sm shadow-lg shadow-red-600/25 flex items-center justify-center gap-2 active:scale-[0.99] transition-all"
             >
-              إرسال الطلب عبر واتساب
+              <Send className="w-4 h-4" />
+              <span>إرسال الطلب عبر واتساب ({zone ? `${total} ج.م` : "تحديد البيانات"})</span>
             </button>
+
             {!phoneOk && (
-              <p className="text-xs text-gray-500 text-center mt-2">
-                اكتب رقم موبايلك عشان نعرف نوصللك الطلب
+              <p className="text-[11px] text-gray-400 text-center mt-2">
+                يرجى إدخال رقم الموبايل لتفعيل زر إرسال الطلب
               </p>
             )}
-            {phoneOk && isQuesna && !quesnaDetail.trim() && (
-              <p className="text-xs text-brand-400 text-center mt-2">
-                برجاء تحديد مكانك بالتفصيل في قويسنا لإرسال الطلب
+            {phoneOk && !zone && (
+              <p className="text-[11px] text-gray-400 text-center mt-2">
+                يرجى تحديد منطقة التوصيل لحساب الإجمالي
               </p>
             )}
 
             <button
               onClick={clear}
-              className="block mx-auto mt-4 text-xs text-gray-500 hover:text-red-400 transition-colors duration-150"
+              className="block mx-auto mt-4 text-[11px] font-bold text-gray-400 hover:text-red-500 transition-colors"
             >
-              تفريغ السلة
+              تفريغ محتويات السلة
             </button>
           </>
         )}
       </div>
+
+      <BottomNav activeTab="cart" />
     </div>
   );
 }

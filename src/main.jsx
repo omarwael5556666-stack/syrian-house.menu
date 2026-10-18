@@ -10,8 +10,8 @@ const CartPage = lazy(() => import("./components/CartPage.jsx"));
 
 function PageLoading() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-dark-950 text-brand-400">
-      <div className="w-8 h-8 rounded-full border-2 border-brand-500 border-t-transparent animate-spin" />
+    <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2] text-[#E4002B]">
+      <div className="w-8 h-8 rounded-full border-2 border-[#E4002B] border-t-transparent animate-spin" />
     </div>
   );
 }
