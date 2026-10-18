@@ -102,20 +102,34 @@ export default function CartPage() {
     <div className="app-shell flex flex-col min-h-screen">
       <div className="flex-1 px-4 pt-4 pb-36">
         {/* ─── Top Bar ───────────────────────────────── */}
-        <div className="flex items-center gap-3 mb-5">
-          <button
-            onClick={() => navigate("/")}
-            className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-700 hover:text-[#E4002B] hover:bg-gray-50 transition-colors"
-            aria-label="رجوع للمينيو"
-          >
-            <ArrowRight className="w-5 h-5" />
-          </button>
-          <div>
-            <h1 className="text-xl font-black text-gray-900">سلة الطلبات</h1>
-            <p className="text-[11px] font-bold text-gray-400">
-              {lines.live.length} أصناف في السلة
-            </p>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate("/")}
+              className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-700 hover:text-[#E4002B] hover:bg-gray-50 transition-colors"
+              aria-label="رجوع للمينيو"
+            >
+              <ArrowRight className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-xl font-black text-gray-900 leading-normal py-0.5">سلة الطلبات</h1>
+              <p className="text-[11px] font-bold text-gray-400">
+                {lines.live.length} أصناف في السلة
+              </p>
+            </div>
           </div>
+
+          {lines.live.length > 0 && (
+            <button
+              onClick={clear}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-[#E4002B] text-xs font-bold transition-all active:scale-95 border border-red-100 shadow-xs"
+              aria-label="إفراغ السلة بالكامل"
+              title="إفراغ السلة"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>إفراغ السلة</span>
+            </button>
+          )}
         </div>
 
         {lines.live.length === 0 ? (
