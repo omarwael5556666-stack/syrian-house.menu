@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Plus, Heart, Star } from "lucide-react";
+import { Plus, Minus, Heart, ImageOff } from "lucide-react";
 
 // ─── Real Food Photography Mapping ──────────────────────────────
 // Maps menu items & categories directly to authentic Syrian food photos.
@@ -18,6 +18,7 @@ const FOOD_PHOTOS = {
 
 function getItemImage(item) {
   if (!item) return null;
+  if (item.imageUrl) return item.imageUrl;
   const t = (item.title || "").toLowerCase();
   const c = (item.category || "").toLowerCase();
 
@@ -110,45 +111,15 @@ function getItemImage(item) {
   return FOOD_PHOTOS.shawarmaChicken;
 }
 
-// Fallback categorized emojis for appetizing visuals
-function getItemEmoji(item) {
-  const t = (item.title || "").toLowerCase();
-  const c = (item.category || "").toLowerCase();
-
-  if (t.includes("بيتزا") || c.includes("بيتزا")) return "🍕";
-  if (t.includes("كريب") || c.includes("كريب")) return "🥞";
-  if (t.includes("شاورما") || c.includes("شاورما")) return "🌯";
-  if (t.includes("فراخ") || t.includes("دجاج") || c.includes("شواية")) return "🍗";
-  if (t.includes("بطاطس") || c.includes("غربي")) return "🍟";
-  if (t.includes("فتة") || c.includes("فتات")) return "🍚";
-  if (t.includes("مكرونة") || c.includes("مكرونات")) return "🍝";
-  if (c.includes("مقبلات") || t.includes("تومية")) return "🧄";
-  return "🍲";
-}
-
-function getNumericId(id) {
-  if (typeof id === "number" && !Number.isNaN(id)) return id;
-  const s = String(id || "");
-  let h = 0;
-  for (let i = 0; i < s.length; i++) {
-    h = (h << 5) - h + s.charCodeAt(i);
-    h |= 0;
-  }
-  return Math.abs(h);
-}
-
-function MenuCard({ item, index, onAdd }) {
-  const [isFavorite, setIsFavorite] = useState(false);
+function MenuCard({ item, onAdd, isFavorite, onToggleFavorite, quantityForSize, onSetQuantity, canOrder = true }) {
   const [selectedSize, setSelectedSize] = useState("M");
   const [imgError, setImgError] = useState(false);
-  const hasSizes = item.priceM != null && item.priceL != null;
+  const hasSizes = Number.isFinite(item.priceM) && Number.isFinite(item.priceL);
+  const price = hasSizes ? (selectedSize === "M" ? item.priceM : item.priceL) : item.price;
+  const quantity = quantityForSize?.(hasSizes ? selectedSize : null) || 0;
+  const available = canOrder && item.isAvailable !== false && Number.isFinite(price) && price >= 0;
 
   const foodImage = getItemImage(item);
-  const emoji = getItemEmoji(item);
-
-  const numId = getNumericId(item.id);
-  const rating = (4.7 + ((numId * 7) % 3) * 0.1).toFixed(1);
-  const reviewCount = 80 + ((numId * 19) % 210);
 
   function handleAdd() {
     if (hasSizes) {
@@ -171,8 +142,9 @@ function MenuCard({ item, index, onAdd }) {
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-4xl">
-            <span className="select-none filter drop-shadow-xs">{emoji}</span>
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-gray-400">
+            <ImageOff className="w-7 h-7" />
+            <span className="text-[10px] font-bold">صورة غير متاحة</span>
           </div>
         )}
 
@@ -180,14 +152,15 @@ function MenuCard({ item, index, onAdd }) {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            setIsFavorite(!isFavorite);
+            onToggleFavorite(item.id);
           }}
           className={`absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-200 shadow-xs ${
             isFavorite
               ? "text-red-500 bg-white/95 shadow-red-500/20 scale-105"
               : "text-gray-600 hover:text-red-500 bg-white/80 hover:bg-white"
           }`}
-          aria-label="إضافة للمفضلة"
+          aria-label={isFavorite ? "إزالة من المفضلة" : "إضافة للمفضلة"}
+          aria-pressed={isFavorite}
         >
           <Heart className={`w-3.5 h-3.5 ${isFavorite ? "fill-current" : ""}`} />
         </button>
@@ -195,26 +168,22 @@ function MenuCard({ item, index, onAdd }) {
 
       {/* ─── Product Title & Description ───────────── */}
       <div className="mb-2 text-right">
-        <h3 className="font-black text-gray-900 text-xs sm:text-sm leading-snug line-clamp-1">
+        <h3 className="font-black text-gray-900 text-sm leading-snug line-clamp-2 min-h-10">
           {item.title}
+          {item.isNew && <span className="new-badge ms-1.5 align-middle">جديد</span>}
         </h3>
 
         {item.description ? (
-          <p className="text-[10px] sm:text-[11px] text-gray-500 leading-relaxed mt-0.5 line-clamp-2 min-h-[28px]">
+          <p className="text-xs text-gray-600 leading-relaxed mt-1 line-clamp-3 min-h-[48px]">
             {item.description}
           </p>
         ) : (
-          <p className="text-[10px] sm:text-[11px] text-gray-400 mt-0.5 line-clamp-1 min-h-[28px]">
+          <p className="text-xs text-gray-500 mt-1 line-clamp-2 min-h-[48px]">
             {item.category}
           </p>
         )}
 
-        {/* Rating row */}
-        <div className="flex items-center gap-1 mt-1 text-[10px] text-gray-500 font-bold">
-          <Star className="w-3 h-3 text-amber-400 fill-current" />
-          <span>{rating}</span>
-          <span className="text-gray-400 font-normal">({reviewCount}+)</span>
-        </div>
+        {item.isAvailable === false && <p className="mt-1 text-[11px] font-bold text-red-600">غير متاح حاليًا</p>}
       </div>
 
       {/* ─── Bottom Price & Add Action ─────────────── */}
@@ -222,7 +191,7 @@ function MenuCard({ item, index, onAdd }) {
         {hasSizes ? (
           <div>
             {/* Size Selector Tabs */}
-            <div className="flex items-center justify-between gap-1 mb-2 bg-gray-100/90 p-0.5 rounded-lg text-[10px] font-black">
+            <div className="flex items-center justify-between gap-1 mb-2 bg-gray-100/90 p-0.5 rounded-lg text-xs font-black">
               <button
                 type="button"
                 onClick={() => setSelectedSize("M")}
@@ -232,7 +201,7 @@ function MenuCard({ item, index, onAdd }) {
                     : "text-gray-500 hover:text-gray-800"
                 }`}
               >
-                M: {item.priceM} ج
+                وسط: {item.priceM} ج
               </button>
               <button
                 type="button"
@@ -243,7 +212,7 @@ function MenuCard({ item, index, onAdd }) {
                     : "text-gray-500 hover:text-gray-800"
                 }`}
               >
-                L: {item.priceL} ج
+                كبير: {item.priceL} ج
               </button>
             </div>
 
@@ -255,31 +224,39 @@ function MenuCard({ item, index, onAdd }) {
                   {selectedSize === "M" ? item.priceM : item.priceL} ج.م
                 </span>
               </div>
-              <button
-                onClick={handleAdd}
-                className="w-8 h-8 rounded-full bg-[#E4002B] hover:bg-[#C8102E] text-white flex items-center justify-center shadow-md active:scale-90 transition-all"
-                title="أضف للسلة"
-              >
-                <Plus className="w-4 h-4 stroke-[2.5]" />
-              </button>
+              {quantity > 0 ? (
+                <div className="flex items-center gap-2 rounded-full bg-red-50 p-1" dir="ltr" aria-label={`الكمية في السلة ${quantity}`}>
+                  <button type="button" onClick={() => onSetQuantity(hasSizes ? selectedSize : null, quantity - 1)} aria-label="تقليل الكمية" className="w-8 h-8 rounded-full bg-white text-[#E4002B] flex items-center justify-center shadow-sm"><Minus className="w-4 h-4" /></button>
+                  <span aria-live="polite" className="min-w-5 text-center text-sm font-black text-gray-900">{quantity}</span>
+                  <button type="button" onClick={() => onSetQuantity(hasSizes ? selectedSize : null, quantity + 1)} aria-label="زيادة الكمية" className="w-8 h-8 rounded-full bg-[#E4002B] text-white flex items-center justify-center shadow-sm"><Plus className="w-4 h-4" /></button>
+                </div>
+              ) : (
+                <button onClick={handleAdd} disabled={!available} className="w-9 h-9 rounded-full bg-[#E4002B] hover:bg-[#C8102E] disabled:bg-gray-300 disabled:shadow-none text-white flex items-center justify-center shadow-md active:scale-90 transition-all" aria-label={`أضف ${item.title} للسلة`} title={available ? "أضف للسلة" : "الصنف غير متاح"}>
+                  <Plus className="w-4 h-4 stroke-[2.5]" />
+                </button>
+              )}
             </div>
           </div>
         ) : (
           <div className="flex items-center justify-between">
             <div>
               <span className="text-[9px] text-gray-400 block leading-none mb-0.5">السعر</span>
-              <span className="text-xs sm:text-sm font-black text-gray-900 tabular-nums">
-                {item.price} ج.م
+                <span className="text-xs sm:text-sm font-black text-gray-900 tabular-nums">
+                  {Number.isFinite(item.price) ? `${item.price} ج.م` : "السعر غير محدد"}
               </span>
             </div>
 
-            <button
-              onClick={handleAdd}
-              className="w-8 h-8 rounded-full bg-[#E4002B] hover:bg-[#C8102E] text-white flex items-center justify-center shadow-md active:scale-90 transition-all"
-              title={`أضف ${item.title} للسلة`}
-            >
-              <Plus className="w-4 h-4 stroke-[2.5]" />
-            </button>
+            {quantity > 0 ? (
+              <div className="flex items-center gap-2 rounded-full bg-red-50 p-1" dir="ltr" aria-label={`الكمية في السلة ${quantity}`}>
+                <button type="button" onClick={() => onSetQuantity(null, quantity - 1)} aria-label="تقليل الكمية" className="w-8 h-8 rounded-full bg-white text-[#E4002B] flex items-center justify-center shadow-sm"><Minus className="w-4 h-4" /></button>
+                <span aria-live="polite" className="min-w-5 text-center text-sm font-black text-gray-900">{quantity}</span>
+                <button type="button" onClick={() => onSetQuantity(null, quantity + 1)} aria-label="زيادة الكمية" className="w-8 h-8 rounded-full bg-[#E4002B] text-white flex items-center justify-center shadow-sm"><Plus className="w-4 h-4" /></button>
+              </div>
+            ) : (
+              <button onClick={handleAdd} disabled={!available} className="w-9 h-9 rounded-full bg-[#E4002B] hover:bg-[#C8102E] disabled:bg-gray-300 disabled:shadow-none text-white flex items-center justify-center shadow-md active:scale-90 transition-all" aria-label={`أضف ${item.title} للسلة`} title={available ? `أضف ${item.title} للسلة` : "السعر غير محدد أو الصنف غير متاح"}>
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            )}
           </div>
         )}
       </div>

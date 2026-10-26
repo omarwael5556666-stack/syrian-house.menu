@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase, isDbConfigured } from "../lib/supabase";
 
@@ -13,7 +14,7 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setReady(true);
-    });
+    }).catch(() => setReady(true));
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);

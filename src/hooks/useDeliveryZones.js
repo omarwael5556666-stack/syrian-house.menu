@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import { supabase, isDbConfigured } from "../lib/supabase";
 import { DELIVERY_DATA } from "../data/menuData";
 
-const CACHE_KEY = "sh_zones_cache_v5";
+const CACHE_KEY = "sh_zones_cache_v6";
 
 function readCache() {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
     const parsed = raw ? JSON.parse(raw) : null;
     if (parsed && Array.isArray(parsed.zones)) {
-      const cachedNames = new Set(parsed.zones.map((z) => z.location));
-      const missing = DELIVERY_DATA.filter((z) => !cachedNames.has(z.location));
-      return [...missing, ...parsed.zones];
+      return parsed.zones;
     }
     return null;
   } catch {
@@ -49,12 +47,9 @@ export default function useDeliveryZones() {
           fee: Number(z.fee),
         }));
 
-        // Merge: ensure any zones defined in DELIVERY_DATA (like "قويسنا") are kept if not yet in DB
-        const dbNames = new Set(dbZones.map((z) => z.location));
-        const staticMissing = DELIVERY_DATA.filter((z) => !dbNames.has(z.location));
-        const next = [...staticMissing, ...dbZones];
+        const next = dbZones;
 
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ zones: next }));
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ zones: next })); } catch { /* storage is optional */ }
         setZones(next);
       } catch (err) {
         console.warn("[useDeliveryZones] falling back:", err?.message);

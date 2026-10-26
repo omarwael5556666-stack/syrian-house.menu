@@ -14,25 +14,29 @@
 
 ---
 
-A production menu platform built for the real-world **Syrian House** restaurant (Egypt): customers browse a fully Arabic RTL menu, check delivery coverage for their area, and order directly via WhatsApp or phone — while staff manage categories, items, prices, and sizes through a secured admin panel backed by **Supabase**.
+A menu and ordering platform built for **Syrian House** restaurant in Egypt. Customers browse the Arabic RTL menu, check delivery coverage, place a WhatsApp order, and look up its status. Staff manage menu content, delivery areas, settings, and order statuses through the Supabase-backed admin panel.
 
 ## ✨ Features
 
 ### Customer side
 - 🔍 **Instant search** across item titles, descriptions, and categories
 - 🗂️ **Category tabs** with live result counts and grouped sections
-- 🛒 **Cart with size variants** (Medium / Large pricing per item) and a floating cart bar
-- 💬 **WhatsApp checkout** — order summary sent straight to the restaurant's WhatsApp
+- 🛒 **Persistent cart** with size variants, per-item notes, current prices, and a floating cart bar
+- 💬 **WhatsApp checkout** with a server-validated order record, delivery fee, ETA, and status tracking link when Supabase is configured
+- 📦 **Order status lookup** by order ID and the phone number used at checkout
+- ❤️ **Saved favorites** and Arabic-aware search across names, descriptions, and categories
 - 📞 **One-tap calling** — all 5 delivery hotlines rendered as `tel:` actions
 - 📍 **Delivery zone checker** — validates the customer's area against Supabase-backed zones (graceful fallback to static data when offline/unconfigured)
-- 🌙 **Dark glassmorphism UI**, fully **RTL**, responsive from small phones to desktop
-- ⚡ **Zero-backend mode** — runs entirely on bundled static data if no Supabase credentials are present
+- 📱 **Installable PWA** with cached app shell, fully RTL layout, and responsive menu grids
+- ⚡ **Static fallback mode** — browses bundled menu data when Supabase credentials are absent
 
 ### Admin panel (`/admin`)
 - 🔐 Supabase Auth email/password login
-- 📝 Full CRUD for menu items and categories (prices, descriptions, size variants, NEW badges)
-- 🚚 Manage delivery coverage zones
-- 🛡️ Row Level Security enforced server-side (`supabase/fix-security.sql`)
+- 📝 Manage menu items, categories, price variants, photos, availability, and display order
+- 🚚 Manage delivery coverage zones and fees
+- ⚙️ Manage restaurant contact details, opening hours, order pauses, delivery estimate, and minimum order value
+- 📦 Review incoming orders and update fulfillment status
+- 🛡️ RLS restricts writes to accounts with a trusted `app_metadata.role = "admin"` claim
 
 ## 🧰 Tech Stack
 
@@ -76,16 +80,15 @@ VITE_SUPABASE_ANON_KEY=<anon-public-key>
 
 ### Database setup
 
-Run the SQL files against your Supabase project (SQL Editor), in order:
+For a new Supabase database, run these files in the SQL Editor, in order:
 
-1. `supabase/all-in-one.sql` — schema, policies, and seed in one shot *(recommended)*
-   <details><summary>or granularly:</summary>
+1. `supabase/all-in-one.sql` — safe, additive schema, order RPCs, and RLS policies. It does not drop or truncate existing data.
+2. `supabase/seed.sql` — adds the starter menu, with Fatta and Arabic separated and all Arabic double meals priced at EGP 220.
+3. `supabase/delivery-zones.sql` — inserts only missing starter delivery zones and preserves edits/removals.
 
-   - `schema.sql` — `categories` + `menu_items` tables
-   - `delivery-zones.sql` — `delivery_zones` table
-   - `seed.sql` / `gen-seed.mjs` — sample data generators
-   - `fix-security.sql` — RLS hardening
-   </details>
+For an existing database, run `supabase/menu-category-price-update.sql` to split the old combined category and set the three Arabic double meals to EGP 220 without reseeding the rest of the menu.
+
+Before enabling `/admin`, assign the restaurant operator's Supabase Auth user a trusted `app_metadata.role` value of `admin` using the Supabase Dashboard or Auth Admin API. Do not use `user_metadata` for authorization; users can edit their own user metadata. Never put a service-role key in `.env.local` or any browser bundle.
 
 ## 📜 Scripts
 
@@ -116,7 +119,7 @@ scripts/             # Seed generation utilities
 
 Deployed on **Vercel**: [syrian-house-menu.vercel.app](https://syrian-house-menu.vercel.app/)
 
-Any push to `main` triggers an automatic production deployment. Set `VITE_SUPABASE_*` env vars in the Vercel project settings.
+Any push to `main` triggers an automatic production deployment. Set `VITE_SUPABASE_*` env vars in the Vercel project settings. Without Supabase, the menu and WhatsApp flow use local static data; recorded orders and status lookup require the SQL setup above.
 
 ## 📄 License
 

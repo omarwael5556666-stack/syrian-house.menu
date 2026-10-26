@@ -1,22 +1,22 @@
-import { useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { Utensils, Sandwich, Soup, Drumstick, Pizza, Flame, CookingPot, Carrot, Plus, CircleEllipsis } from "lucide-react";
 
-// Emoji map for authentic Syrian House categories matching KFC circular styling
-const CATEGORY_EMOJIS = {
-  الكل: "🍽️",
-  "سندوتشات البيت السوري": "🌯",
-  الكريبات: "🥞",
-  المقبلات: "🧄",
-  "وجبات الغربي": "🍟",
-  "الفراخ الشواية": "🍗",
-  "أوزان الشاورما": "🥩",
-  "أطباق العربي وفتات الشاورما": "🍚",
-  البيتزا: "🍕",
-  المكرونات: "🍝",
-  الإضافات: "🧀",
-  "إضافات البيتزا": "🍄",
+const CATEGORY_ICONS = {
+  الكل: Utensils,
+  "سندوتشات البيت السوري": Sandwich,
+  الكريبات: CircleEllipsis,
+  المقبلات: Soup,
+  "وجبات الغربي": CookingPot,
+  "الفراخ الشواية": Drumstick,
+  "أوزان الشاورما": Flame,
+  "فتات الشاورما": Soup,
+  "أطباق العربي": Sandwich,
+  البيتزا: Pizza,
+  المكرونات: CookingPot,
+  الإضافات: Plus,
+  "إضافات البيتزا": Carrot,
 };
 
-// Short friendly display names for clean 1-line circle caption
 const SHORT_NAMES = {
   الكل: "الكل",
   "سندوتشات البيت السوري": "سندوتشات",
@@ -25,7 +25,8 @@ const SHORT_NAMES = {
   "وجبات الغربي": "وجبات غربي",
   "الفراخ الشواية": "فراخ شواية",
   "أوزان الشاورما": "شاورما بالكيلو",
-  "أطباق العربي وفتات الشاورما": "فتات وعربي",
+  "فتات الشاورما": "فتات",
+  "أطباق العربي": "عربي",
   البيتزا: "بيتزا",
   المكرونات: "مكرونة",
   الإضافات: "إضافات",
@@ -36,91 +37,30 @@ export default function CategoryTabs({ categories, activeCategory, onCategoryCha
   const scrollRef = useRef(null);
   const activeBtnRef = useRef(null);
 
-  // Auto center active category button on change
   useEffect(() => {
-    if (activeBtnRef.current && scrollRef.current) {
-      activeBtnRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
-    }
+    activeBtnRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   }, [activeCategory]);
-
-  const sortedCategories = [...categories].sort((a, b) => {
-    const getPriority = (c) => {
-      const lower = (c || "").toLowerCase().trim();
-      // 1. سندوتشات البيت السوري - رقم 1 دائماً
-      if (lower.includes("سندوتش")) return 1;
-      // 2. وجبات الغربي
-      if (lower.includes("وجبات") || lower.includes("غربي")) return 2;
-      // 3. الكريبات
-      if (lower.includes("كريب")) return 3;
-      // 4. أطباق العربي وفتات الشاورما
-      if (lower.includes("فتات") || lower.includes("عربي")) return 4;
-      // 5. البيتزا
-      if (lower.includes("بيتزا")) return 5;
-      // 6. المكرونات
-      if (lower.includes("مكرون")) return 6;
-      // 7. الفراخ الشواية
-      if (lower.includes("شواية") || lower.includes("فراخ")) return 7;
-      // 8. أوزان الشاورما
-      if (lower.includes("أوزان") || lower.includes("اوزان") || lower.includes("شاورما") || lower.includes("كيلو")) return 8;
-      // 9. المقبلات
-      if (lower.includes("مقبلات") || lower.includes("تومية")) return 9;
-      // 10. الإضافات
-      if (lower.includes("إضاف") || lower.includes("اضاف")) return 99;
-      return 50;
-    };
-    return getPriority(a) - getPriority(b);
-  });
-
-  const allCategories = ["الكل", ...sortedCategories];
 
   return (
     <div id="menu-categories" className="mb-6 pt-1">
-      <div
-        ref={scrollRef}
-        className="flex items-start gap-4 overflow-x-auto no-scrollbar py-2 px-1 scroll-smooth"
-        role="tablist"
-      >
-        {allCategories.map((cat) => {
-          const isActive = activeCategory === cat;
-          const emoji = CATEGORY_EMOJIS[cat] || "🍲";
-          const shortName = SHORT_NAMES[cat] || cat;
-
+      <div ref={scrollRef} className="flex items-start gap-4 overflow-x-auto no-scrollbar py-2 px-1 scroll-smooth" role="tablist" aria-label="أقسام قائمة الطعام">
+        {["الكل", ...categories].map((category) => {
+          const isActive = activeCategory === category;
+          const Icon = CATEGORY_ICONS[category] || CircleEllipsis;
           return (
             <button
-              key={cat}
+              key={category}
               ref={isActive ? activeBtnRef : null}
               role="tab"
               aria-selected={isActive}
-              onClick={() => onCategoryChange(cat)}
-              className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none"
+              onClick={() => onCategoryChange(category)}
+              className="flex flex-col items-center gap-1.5 shrink-0 group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E4002B]"
             >
-              {/* Circular Icon (KFC Style) */}
-              <div
-                className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200 bg-white shadow-sm ${
-                  isActive
-                    ? "ring-2 ring-[#E4002B] ring-offset-2 scale-105 shadow-md shadow-red-500/10"
-                    : "border border-gray-100 hover:border-gray-200 group-hover:scale-102"
-                }`}
-              >
-                <span className="text-2xl select-none transition-transform duration-200 group-hover:scale-110">
-                  {emoji}
-                </span>
-              </div>
-
-              {/* Text Label */}
-              <span
-                className={`text-[11px] max-w-[72px] text-center leading-tight transition-colors duration-200 truncate ${
-                  isActive
-                    ? "text-[#E4002B] font-black"
-                    : "text-gray-600 font-semibold group-hover:text-gray-900"
-                }`}
-                title={cat}
-              >
-                {shortName}
+              <span className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200 bg-white ${isActive ? "ring-2 ring-[#E4002B] ring-offset-2 scale-105 shadow-md shadow-red-500/10" : "border border-gray-200 group-hover:border-gray-300 group-hover:scale-105"}`}>
+                <Icon className={`w-7 h-7 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-[#E4002B]" : "text-gray-600"}`} strokeWidth={1.8} aria-hidden="true" />
+              </span>
+              <span className={`text-[11px] max-w-[78px] text-center leading-tight truncate ${isActive ? "text-[#E4002B] font-black" : "text-gray-700 font-semibold"}`} title={category}>
+                {SHORT_NAMES[category] || category}
               </span>
             </button>
           );

@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Search, X, Truck, MapPinOff, ChevronDown, ChevronUp } from "lucide-react";
 import useDeliveryZones from "../hooks/useDeliveryZones";
+import { formatMoney, normalizeArabic } from "../lib/arabic";
 
 export default function DeliverySearch() {
   const [query, setQuery] = useState("");
@@ -30,9 +31,9 @@ export default function DeliverySearch() {
   }
 
   const filtered = useMemo(() => {
-    const q = query.trim();
+    const q = normalizeArabic(query);
     if (!q) return zones;
-    return zones.filter((d) => d.location.includes(q));
+    return zones.filter((d) => normalizeArabic(d.location).includes(q));
   }, [query, zones]);
 
   return (
@@ -97,7 +98,7 @@ export default function DeliverySearch() {
               >
                 <span className="text-xs font-bold text-gray-800 truncate">{d.location}</span>
                 <span className="text-xs font-black text-[#E4002B] shrink-0 ms-1">
-                  {d.fee} ج.م
+                  {formatMoney(d.fee)} ج.م
                 </span>
               </div>
             ))}

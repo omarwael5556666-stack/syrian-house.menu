@@ -12,13 +12,44 @@ import menuData, { CATEGORIES } from "../data/menuData";
  * 3. If the DB is not configured or unreachable, static data stays.
  */
 
-const CACHE_KEY = "sh_menu_cache_v1";
+const CACHE_KEY = "sh_menu_cache_v2";
+const LEGACY_COMBINED_CATEGORY = "أطباق العربي وفتات الشاورما";
+const FATTA_CATEGORY = "فتات الشاورما";
+const ARABIC_CATEGORY = "أطباق العربي";
+
+function normalizeItemCategory(category, title = "") {
+  if (category !== LEGACY_COMBINED_CATEGORY) return category;
+  return title.includes("فتة") || title.includes("فته") ? FATTA_CATEGORY : ARABIC_CATEGORY;
+}
+
+function normalizeCategoryList(names = []) {
+  const expanded = names.flatMap((name) =>
+    name === LEGACY_COMBINED_CATEGORY ? [FATTA_CATEGORY, ARABIC_CATEGORY] : [name]
+  );
+  const pairIndex = expanded.findIndex((name) => name === FATTA_CATEGORY || name === ARABIC_CATEGORY);
+  if (pairIndex === -1) return expanded;
+
+  const remaining = expanded.filter((name) => name !== FATTA_CATEGORY && name !== ARABIC_CATEGORY);
+  remaining.splice(Math.min(pairIndex, remaining.length), 0, FATTA_CATEGORY, ARABIC_CATEGORY);
+  return [...new Set(remaining)];
+}
+
+function normalizeSnapshot(snapshot) {
+  return {
+    ...snapshot,
+    categories: normalizeCategoryList(snapshot.categories),
+    items: snapshot.items.map((item) => ({
+      ...item,
+      category: normalizeItemCategory(item.category, item.title),
+    })),
+  };
+}
 
 function readCache() {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
     const parsed = raw ? JSON.parse(raw) : null;
-    return parsed && Array.isArray(parsed.items) ? parsed : null;
+    return parsed && Array.isArray(parsed.items) ? normalizeSnapshot(parsed) : null;
   } catch {
     return null;
   }
@@ -31,7 +62,7 @@ export function applyMenu({ categories, items }) {
 export function rowToItem(r) {
   return {
     id: r.id,
-    category: r.categories?.name ?? "",
+    category: normalizeItemCategory(r.categories?.name ?? "", r.title),
     title: r.title,
     description: r.description ?? "",
     price: r.price != null ? Number(r.price) : null,
@@ -39,6 +70,7 @@ export function rowToItem(r) {
     priceL: r.price_l != null ? Number(r.price_l) : null,
     imageUrl: r.image_url ?? "",
     isNew: Boolean(r.is_new),
+    isAvailable: Boolean(r.is_available),
   };
 }
 
@@ -49,6 +81,7 @@ export default function useMenuData() {
     items: menuData.map((it) => ({
       ...toPublicItem(it),
       id: `static-${it.id}`,
+      isAvailable: it.isAvailable ?? (it.price != null || (it.priceM != null && it.priceL != null)),
     })),
     source: isDbConfigured ? "loading" : "static",
   }));
@@ -68,7 +101,6 @@ export default function useMenuData() {
           supabase
             .from("menu_items")
             .select("*, categories(name)")
-            .eq("is_available", true)
             .order("sort_order")
             .order("title"),
         ]);
@@ -77,10 +109,10 @@ export default function useMenuData() {
         if (itemsRes.error) throw itemsRes.error;
 
         const next = {
-          categories: catsRes.data.map((c) => c.name),
+          categories: normalizeCategoryList(catsRes.data.map((c) => c.name)),
           items: itemsRes.data.map(rowToItem),
         };
-        localStorage.setItem(CACHE_KEY, JSON.stringify(next));
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(next)); } catch { /* storage is optional */ }
         setState({ ...next, source: "db" });
       } catch (err) {
         console.warn("[useMenuData] falling back:", err?.message);
@@ -104,5 +136,7 @@ function toPublicItem(it) {
     priceM: it.priceM ?? null,
     priceL: it.priceL ?? null,
     isNew: Boolean(it.isNew),
+    imageUrl: it.imageUrl ?? "",
+    isAvailable: it.isAvailable ?? (it.price != null || (it.priceM != null && it.priceL != null)),
   };
 }

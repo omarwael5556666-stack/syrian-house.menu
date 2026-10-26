@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 /**
@@ -25,7 +26,7 @@ export function CartProvider({ children }) {
   const [entries, setEntries] = useState(loadCart);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); } catch { /* cart still works for this session */ }
   }, [entries]);
 
   const value = useMemo(() => {

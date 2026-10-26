@@ -6,6 +6,9 @@ import useDeliveryZones from "../hooks/useDeliveryZones";
 import { RESTAURANT_INFO } from "../data/menuData";
 import { navigate } from "../lib/router";
 import BottomNav from "./BottomNav";
+import useRestaurantSettings from "../hooks/useRestaurantSettings";
+import { isDbConfigured, supabase } from "../lib/supabase";
+import { formatMoney, isValidEgyptianMobile, normalizeDigits } from "../lib/arabic";
 
 export default function CartPage() {
   // Scroll to top immediately when cart page opens
@@ -16,6 +19,8 @@ export default function CartPage() {
   const { entries, setQty, setNote, remove, clear } = useCart();
   const { items: menuItems } = useMenuData();
   const zones = useDeliveryZones();
+  const { settings, isOpen } = useRestaurantSettings();
+  const restaurantInfo = { ...RESTAURANT_INFO, ...settings };
 
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
@@ -23,20 +28,24 @@ export default function CartPage() {
   const [zoneName, setZoneName] = useState("");
   const [quesnaDetail, setQuesnaDetail] = useState("");
   const [orderNote, setOrderNote] = useState("");
+  const [sending, setSending] = useState(false);
+  const [notice, setNotice] = useState("");
 
   // Resolve live item data
   const lines = useMemo(() => {
     const byId = new Map(menuItems.map((i) => [i.id, i]));
     const live = [];
+    const invalid = [];
     for (const e of entries) {
       const item = byId.get(e.id);
-      if (item) {
+      if (item && item.isAvailable !== false) {
         const price =
           e.size === "M" ? item.priceM : e.size === "L" ? item.priceL : item.price;
-        live.push({ ...e, item, price });
-      }
+        if (Number.isFinite(price) && price >= 0) live.push({ ...e, item, price });
+        else invalid.push({ ...e, item });
+      } else invalid.push({ ...e, item: item ?? null });
     }
-    return { live };
+    return { live, invalid };
   }, [entries, menuItems]);
 
   const subtotal = lines.live.reduce((sum, l) => sum + l.price * l.qty, 0);
@@ -44,63 +53,106 @@ export default function CartPage() {
   const deliveryFee = zone ? zone.fee : 0;
   const total = subtotal + deliveryFee;
 
-  function normalizeDigits(v) {
-    return String(v).replace(/[\u0660-\u0669\u06F0-\u06F9]/g, (d) => {
-      const c = d.charCodeAt(0);
-      return String(c <= 0x0669 ? c - 0x0660 : c - 0x06f0);
-    });
-  }
-
-  const isValidPhone = (p) => {
-    const digits = normalizeDigits(p).replace(/\D/g, "");
-    return digits.length >= 10 && digits.length <= 14;
-  };
-
-  const phoneOk = isValidPhone(phone);
+  const phoneOk = isValidEgyptianMobile(phone);
+  const phone2Ok = !phone2.trim() || isValidEgyptianMobile(phone2);
+  const normalizedPhone = normalizeDigits(phone).replace(/\D/g, "").replace(/^(?:0020|20)/, "");
+  const normalizedPhone2 = normalizeDigits(phone2).replace(/\D/g, "").replace(/^(?:0020|20)/, "");
   const isQuesna = zoneName === "قويسنا";
   const quesnaOk = !isQuesna || quesnaDetail.trim().length > 0;
+  const minimumOk = subtotal >= Number(settings.minimum_order || 0);
 
-  function sendToWhatsapp() {
-    const L = [];
-    L.push(`*طلب جديد - ${RESTAURANT_INFO.name}*`);
-    L.push("");
-    for (const l of lines.live) {
-      L.push(`• ${l.qty}× ${l.item.title}${l.size ? ` (${l.size})` : ""}`);
-      if (l.note && l.note.trim()) L.push(`   ملاحظة: ${l.note.trim()}`);
+  async function sendToWhatsapp() {
+    if (sending || !isOpen || !zone || !phoneOk || !phone2Ok || !quesnaOk || !minimumOk || lines.invalid.length) return;
+    const whatsappWindow = window.open("about:blank", "_blank");
+    if (!whatsappWindow) {
+      setNotice("تعذر فتح نافذة واتساب. اسمح بالنوافذ المنبثقة ثم حاول مرة أخرى.");
+      return;
     }
-    if (orderNote.trim()) {
-      L.push("");
-      L.push(`*ملاحظات عامة:* ${orderNote.trim()}`);
-    }
-    L.push("");
-    L.push(`*المجموع:* ${subtotal} ج.م`);
-    if (zone) {
-      L.push(`*التوصيل:* ${zone.location} (${deliveryFee} ج.م)`);
-      if (isQuesna && quesnaDetail.trim()) {
-        L.push(`*المكان بالتفصيل في قويسنا:* ${quesnaDetail.trim()}`);
-      }
-      L.push(`*الإجمالي:* ${total} ج.م`);
-    }
-    if (customerName.trim()) {
-      L.push("");
-      L.push(`الاسم: ${customerName.trim()}`);
-    }
-    if (phone.trim()) {
-      L.push(`*الموبايل:* ${normalizeDigits(phone).trim()}`);
-    }
-    if (phone2.trim()) {
-      L.push(`موبايل 2: ${normalizeDigits(phone2).trim()}`);
-    }
+    setSending(true);
+    setNotice("");
+    try {
+        let savedOrder = null;
+        const canRecord = isDbConfigured && lines.live.every((line) => typeof line.id === "string" && !line.id.startsWith("static-"));
+        if (isDbConfigured && !canRecord) {
+          setNotice("تعذر التحقق من نسخة المنيو الحالية؛ الطلب لن يُسجل داخل النظام وسيظل محفوظًا في السلة.");
+        }
+        if (canRecord) {
+          try {
+            const { data, error } = await supabase.rpc("place_order", {
+              p_customer: {
+                name: customerName.trim(), phone: normalizedPhone, phone2: normalizedPhone2,
+                delivery_detail: quesnaDetail.trim(), note: orderNote.trim(),
+              },
+              p_zone_name: zoneName,
+              p_items: lines.live.map((line) => ({ id: line.id, size: line.size, quantity: line.qty, note: line.note })),
+            });
+            if (error) throw error;
+            savedOrder = data;
+          } catch (error) {
+            if (error?.code === "P0001") {
+              whatsappWindow.close();
+              setNotice(error.message || "تعذر اعتماد الطلب. راجع بيانات السلة وحاول مرة أخرى.");
+              return;
+            }
+            setNotice(`تعذر تسجيل الطلب داخل النظام (${error?.message || "خطأ اتصال"})، لكن يمكنك إرساله عبر واتساب.`);
+          }
+        }
 
-    const url = `https://wa.me/${RESTAURANT_INFO.orderWhatsapp}?text=${encodeURIComponent(
-      L.join("\n")
-    )}`;
-    window.open(url, "_blank");
+        const L = [];
+        L.push(`*طلب جديد - ${restaurantInfo.restaurant_name || restaurantInfo.name}*`);
+        if (savedOrder?.id) {
+          L.push(`رقم الطلب: ${savedOrder.id}`);
+          L.push(`متابعة الحالة: ${window.location.origin}/track?order=${encodeURIComponent(savedOrder.id)}`);
+        }
+        L.push("");
+        for (const l of lines.live) {
+          L.push(`• ${l.qty}× ${l.item.title}${l.size ? ` (${l.size === "M" ? "وسط" : "كبير"})` : ""}`);
+          if (l.note && l.note.trim()) L.push(`   ملاحظة: ${l.note.trim()}`);
+        }
+        if (orderNote.trim()) {
+          L.push("");
+          L.push(`*ملاحظات عامة:* ${orderNote.trim()}`);
+        }
+        L.push("");
+        const orderSubtotal = savedOrder?.subtotal ?? subtotal;
+        const orderTotal = savedOrder?.total ?? total;
+        const orderDeliveryFee = savedOrder?.delivery_fee ?? deliveryFee;
+        L.push(`*المجموع:* ${orderSubtotal} ج.م`);
+        if (zone) {
+          L.push(`*التوصيل:* ${zone.location} (${orderDeliveryFee} ج.م)`);
+          if (isQuesna && quesnaDetail.trim()) {
+            L.push(`*المكان بالتفصيل في قويسنا:* ${quesnaDetail.trim()}`);
+          }
+          L.push(`*الإجمالي:* ${orderTotal} ج.م`);
+          L.push(`*الوقت المتوقع:* ${savedOrder?.eta_minutes ?? settings.eta_minutes} دقيقة تقريبًا`);
+        }
+        if (customerName.trim()) {
+          L.push("");
+          L.push(`الاسم: ${customerName.trim()}`);
+        }
+        if (phone.trim()) {
+          L.push(`*الموبايل:* ${normalizedPhone}`);
+        }
+        if (phone2.trim()) {
+          L.push(`موبايل 2: ${normalizedPhone2}`);
+        }
+
+        const url = `https://wa.me/${restaurantInfo.order_whatsapp || restaurantInfo.orderWhatsapp}?text=${encodeURIComponent(
+          L.join("\n")
+        )}`;
+        whatsappWindow.location.href = url;
+        if (savedOrder || !isDbConfigured) clear();
+    } catch (error) {
+      whatsappWindow.close();
+      setNotice(`تعذر تجهيز الطلب (${error?.message || "خطأ غير متوقع"}). لم يتم إرساله، حاول مرة أخرى.`);
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
     <div className="app-shell flex flex-col min-h-screen">
-      <div className="flex-1 px-4 pt-4 pb-36">
+      <div className="flex-1 w-full max-w-2xl mx-auto px-4 pt-4 pb-36">
         {/* ─── Top Bar ───────────────────────────────── */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
@@ -114,12 +166,12 @@ export default function CartPage() {
             <div>
               <h1 className="text-xl font-black text-gray-900 leading-normal py-0.5">سلة الطلبات</h1>
               <p className="text-[11px] font-bold text-gray-400">
-                {lines.live.length} أصناف في السلة
+                {entries.length} أصناف في السلة
               </p>
             </div>
           </div>
 
-          {lines.live.length > 0 && (
+          {entries.length > 0 && (
             <button
               onClick={clear}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-[#E4002B] text-xs font-bold transition-all active:scale-95 border border-red-100 shadow-xs"
@@ -132,7 +184,8 @@ export default function CartPage() {
           )}
         </div>
 
-        {lines.live.length === 0 ? (
+        {notice && <p role="status" className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold text-amber-900">{notice}</p>}
+        {lines.live.length === 0 && lines.invalid.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
             <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4 text-[#E4002B]">
               <ShoppingBag className="w-8 h-8" />
@@ -150,6 +203,19 @@ export default function CartPage() {
           </div>
         ) : (
           <>
+            {lines.invalid.length > 0 && (
+              <div role="alert" className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4">
+                <p className="mb-2 text-sm font-black text-red-800">في السلة أصناف غير متاحة أو سعرها غير محدد</p>
+                <ul className="space-y-2">
+                  {lines.invalid.map((line) => (
+                    <li key={line.key} className="flex items-center justify-between gap-3 text-xs text-red-800">
+                      <span>{line.item?.title || "صنف محذوف من القائمة"}</span>
+                      <button onClick={() => remove(line.key)} className="font-black underline underline-offset-2">إزالة</button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {/* ─── Cart Items List ───────────────────── */}
             <div className="space-y-3 mb-6">
               {lines.live.map((l) => (
@@ -162,8 +228,8 @@ export default function CartPage() {
                       <h3 className="font-black text-gray-900 text-sm leading-snug">
                         {l.item.title}
                         {l.size && (
-                          <span className="ms-2 inline-block text-[11px] font-black bg-red-50 text-[#E4002B] px-2 py-0.5 rounded-md">
-                            حجم {l.size}
+                            <span className="ms-2 inline-block text-[11px] font-black bg-red-50 text-[#E4002B] px-2 py-0.5 rounded-md">
+                            {l.size === "M" ? "وسط" : "كبير"}
                           </span>
                         )}
                       </h3>
@@ -173,7 +239,7 @@ export default function CartPage() {
                     <button
                       onClick={() => remove(l.key)}
                       aria-label={`إزالة ${l.item.title}`}
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-[#8F2433] hover:text-[#B42318] hover:bg-red-50 transition-colors shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -260,7 +326,7 @@ export default function CartPage() {
                   />
                   {phone && !phoneOk && (
                     <p className="text-[10px] text-red-500 mt-1">
-                      اكتب رقم موبايل صحيح (10-14 رقم)
+                      أدخل رقم موبايل مصري صحيح يبدأ بـ 010 أو 011 أو 012 أو 015
                     </p>
                   )}
                 </div>
@@ -279,6 +345,7 @@ export default function CartPage() {
                     placeholder="01xxxxxxxxx"
                     className="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#E4002B] focus:bg-white"
                   />
+                  {phone2 && !phone2Ok && <p className="text-[10px] text-red-500 mt-1">أدخل رقم موبايل مصري صحيح أو اترك الحقل فارغًا</p>}
                 </div>
               </div>
 
@@ -340,18 +407,18 @@ export default function CartPage() {
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2 mb-4 text-xs font-bold">
               <div className="flex justify-between text-gray-500">
                 <span>مجموع الأصناف</span>
-                <span className="text-gray-900 tabular-nums">{subtotal} ج.م</span>
+                <span className="text-gray-900 tabular-nums">{formatMoney(subtotal)} ج.م</span>
               </div>
               <div className="flex justify-between text-gray-500">
                 <span>رسوم التوصيل</span>
                 <span className="text-gray-900 tabular-nums">
-                  {zone ? `${deliveryFee} ج.م` : "اختر المنطقة"}
+                  {zone ? `${formatMoney(deliveryFee)} ج.م` : "اختر المنطقة"}
                 </span>
               </div>
               <div className="flex justify-between font-black text-sm text-[#E4002B] pt-2 border-t border-gray-100">
                 <span>الإجمالي النهائي</span>
                 <span className="tabular-nums">
-                  {zone ? `${total} ج.م` : `${subtotal} ج.م + التوصيل`}
+                  {zone ? `${formatMoney(total)} ج.م` : `${formatMoney(subtotal)} ج.م + التوصيل`}
                 </span>
               </div>
             </div>
@@ -359,11 +426,11 @@ export default function CartPage() {
             {/* ─── WhatsApp Order Button ─────────────── */}
             <button
               onClick={sendToWhatsapp}
-              disabled={!zone || lines.live.length === 0 || !phoneOk || !quesnaOk}
+              disabled={sending || !isOpen || !zone || lines.live.length === 0 || lines.invalid.length > 0 || !phoneOk || !phone2Ok || !quesnaOk || !minimumOk}
               className="w-full h-13 py-3 rounded-2xl bg-[#E4002B] hover:bg-[#C8102E] disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-sm shadow-lg shadow-red-600/25 flex items-center justify-center gap-2 active:scale-[0.99] transition-all"
             >
               <Send className="w-4 h-4" />
-              <span>إرسال الطلب عبر واتساب ({zone ? `${total} ج.م` : "تحديد البيانات"})</span>
+              <span>{sending ? "جارٍ تجهيز الطلب…" : !isOpen ? "المطعم مغلق حاليًا" : `إرسال الطلب عبر واتساب (${zone ? `${formatMoney(total)} ج.م` : "تحديد البيانات"})`}</span>
             </button>
 
             {!phoneOk && (
@@ -371,6 +438,9 @@ export default function CartPage() {
                 يرجى إدخال رقم الموبايل لتفعيل زر إرسال الطلب
               </p>
             )}
+            {!phone2Ok && <p className="text-[11px] text-red-500 text-center mt-2">رقم الموبايل الإضافي غير صحيح</p>}
+            {!minimumOk && <p className="text-[11px] text-gray-500 text-center mt-2">الحد الأدنى للطلب {formatMoney(settings.minimum_order)} ج.م</p>}
+            {!isOpen && <p className="text-[11px] text-gray-500 text-center mt-2">{settings.opening_time && settings.closing_time ? `مواعيد استقبال الطلبات ${String(settings.opening_time).slice(0, 5)}–${String(settings.closing_time).slice(0, 5)}` : "المطعم متوقف مؤقتًا عن استقبال الطلبات"}</p>}
             {phoneOk && !zone && (
               <p className="text-[11px] text-gray-400 text-center mt-2">
                 يرجى تحديد منطقة التوصيل لحساب الإجمالي

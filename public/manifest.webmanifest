@@ -1,0 +1,15 @@
+{
+  "name": "مطعم البيت السوري",
+  "short_name": "البيت السوري",
+  "description": "قائمة الطعام والتوصيل لمطعم البيت السوري في قويسنا",
+  "lang": "ar-EG",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#E4002B",
+  "icons": [
+    { "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

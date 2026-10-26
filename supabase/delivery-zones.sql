@@ -1,21 +1,16 @@
--- Delivery zones table + seed (safe to re-run)
-
+-- Delivery zone setup and initial values; reruns preserve edits and removals.
 create table if not exists public.delivery_zones (
-  id         uuid primary key default gen_random_uuid(),
-  name       text not null unique,
-  fee        numeric(10,2) not null,
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  fee numeric(10,2) not null check (fee >= 0),
   sort_order integer not null default 0,
   created_at timestamptz not null default now()
 );
-
 alter table public.delivery_zones enable row level security;
-
-drop policy if exists 'public read zones' on public.delivery_zones;
-drop policy if exists 'admin write zones' on public.delivery_zones;
-create policy 'public read zones' on public.delivery_zones for select using (true);
-create policy 'admin write zones' on public.delivery_zones for all to authenticated using (true) with check (true);
-
-delete from public.delivery_zones;
+drop policy if exists "public read zones" on public.delivery_zones;
+drop policy if exists "admin write zones" on public.delivery_zones;
+create policy "public read zones" on public.delivery_zones for select using (true);
+create policy "admin write zones" on public.delivery_zones for all to authenticated using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin') with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 insert into public.delivery_zones (name, fee, sort_order) values
   ('قويسنا', 15, 0),
   ('قويسنا البلد', 45, 1),
@@ -61,4 +56,5 @@ insert into public.delivery_zones (name, fee, sort_order) values
   ('كفر وهب', 50, 41),
   ('عزية مسيحه', 70, 42),
   ('كفر عبده', 45, 43),
-  ('عزية شمس', 70, 44);
+  ('عزية شمس', 70, 44)
+on conflict (name) do nothing;

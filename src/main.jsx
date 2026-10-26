@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import { StrictMode, lazy, Suspense, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
@@ -5,8 +6,17 @@ import { CartProvider } from "./context/CartContext.jsx";
 import { usePath } from "./lib/router.js";
 import "./index.css";
 
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch((error) => {
+      console.warn("[service worker] registration failed:", error?.message);
+    });
+  }, { once: true });
+}
+
 const AdminApp = lazy(() => import("./admin/AdminApp.jsx"));
 const CartPage = lazy(() => import("./components/CartPage.jsx"));
+const OrderTracking = lazy(() => import("./components/OrderTracking.jsx"));
 
 function PageLoading() {
   return (
@@ -30,6 +40,10 @@ function Routes() {
         <AdminApp />
       </Suspense>
     );
+  }
+
+  if (path.startsWith("/track")) {
+    return <Suspense fallback={<PageLoading />}><OrderTracking /></Suspense>;
   }
 
   return (

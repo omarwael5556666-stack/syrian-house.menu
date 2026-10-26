@@ -6,7 +6,6 @@ import {
   MapPin,
   ArrowLeft,
   X,
-  Phone,
   SlidersHorizontal,
   Search,
 } from "lucide-react";
@@ -14,7 +13,7 @@ import { RESTAURANT_INFO } from "../data/menuData";
 import { useCart } from "../context/CartContext";
 import { navigate } from "../lib/router";
 
-export default function Header({ searchQuery, onSearchChange }) {
+export default function Header({ searchQuery, onSearchChange, restaurantInfo = RESTAURANT_INFO }) {
   const { entries } = useCart();
   const itemCount = entries.reduce((s, e) => s + e.qty, 0);
   const [showMenuDrawer, setShowMenuDrawer] = useState(false);
@@ -50,10 +49,10 @@ export default function Header({ searchQuery, onSearchChange }) {
             <span>أهلاً بك 👋</span>
           </p>
           <h1 className="text-xl sm:text-2xl font-black text-[#E4002B] tracking-tight leading-normal py-0.5">
-            {RESTAURANT_INFO.name}
+            {restaurantInfo.restaurant_name || restaurantInfo.name}
           </h1>
           <p className="text-[10px] sm:text-[11px] font-bold text-gray-500 mt-0.5">
-            {RESTAURANT_INFO.tagline} • {RESTAURANT_INFO.englishName}
+            {restaurantInfo.tagline} • {restaurantInfo.english_name || restaurantInfo.englishName}
           </p>
         </div>
 
@@ -68,7 +67,7 @@ export default function Header({ searchQuery, onSearchChange }) {
           >
             <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5" />
             <span className="absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 rounded-full bg-[#E4002B] text-white text-[9px] font-black flex items-center justify-center shadow-xs">
-              {RESTAURANT_INFO.phones.length}
+              {restaurantInfo.phones.length}
             </span>
           </button>
 
@@ -137,6 +136,7 @@ export default function Header({ searchQuery, onSearchChange }) {
           alt="ساندوتشات شاورما لحمة وفراخ ووجبات البيت السوري"
           className="absolute inset-0 w-full h-full object-cover object-left sm:object-center transform scale-102"
           loading="eager"
+          fetchPriority="high"
         />
 
         {/* Gradient Overlays for High Text Contrast & Readability in RTL */}
@@ -145,7 +145,7 @@ export default function Header({ searchQuery, onSearchChange }) {
 
         <div className="relative z-10 max-w-[310px] sm:max-w-sm">
           <span className="inline-block text-[10px] font-black tracking-wider bg-[#E4002B] text-white px-2.5 py-0.5 rounded-full mb-1.5 uppercase shadow-sm">
-            {RESTAURANT_INFO.tagline}
+            {restaurantInfo.tagline}
           </span>
           <h2 className="text-xl sm:text-2xl font-black leading-tight mb-1 text-white drop-shadow-md">
             طعم سوري أصيل.
@@ -163,20 +163,13 @@ export default function Header({ searchQuery, onSearchChange }) {
           </button>
         </div>
 
-        {/* Carousel Dots */}
-        <div className="relative z-10 flex items-center justify-center gap-1.5 pt-2">
-          <span className="w-4 h-1 rounded-full bg-[#E4002B] shadow-xs" />
-          <span className="w-1.5 h-1 rounded-full bg-white/60" />
-          <span className="w-1.5 h-1 rounded-full bg-white/60" />
-          <span className="w-1.5 h-1 rounded-full bg-white/60" />
-        </div>
       </div>
 
       {/* ─── 4. Compact Address & Delivery Chip ───────── */}
       <div className="flex items-center justify-between bg-white rounded-2xl px-3.5 py-2 shadow-xs border border-gray-100 mb-2 text-xs">
         <div className="flex items-center gap-1.5 text-gray-700 font-bold truncate">
           <MapPin className="w-3.5 h-3.5 text-[#E4002B] shrink-0" />
-          <span className="truncate text-[11px]">{RESTAURANT_INFO.address}</span>
+          <span className="truncate text-[11px]">{restaurantInfo.address}</span>
         </div>
         <button
           onClick={() => {
@@ -209,7 +202,7 @@ export default function Header({ searchQuery, onSearchChange }) {
               اضغط على أي رقم للاتصال المباشر بالمطعم لطلب الدليفري أو الاستفسار:
             </p>
             <div className="space-y-1.5 mb-3">
-              {RESTAURANT_INFO.phones.map((p) => (
+              {restaurantInfo.phones.map((p) => (
                 <a
                   key={p.number}
                   href={`tel:${p.raw}`}
@@ -238,8 +231,8 @@ export default function Header({ searchQuery, onSearchChange }) {
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
                 <div>
-                  <h3 className="font-black text-base text-[#E4002B]">{RESTAURANT_INFO.name}</h3>
-                  <p className="text-[11px] text-gray-500">{RESTAURANT_INFO.tagline}</p>
+                  <h3 className="font-black text-base text-[#E4002B]">{restaurantInfo.restaurant_name || restaurantInfo.name}</h3>
+                  <p className="text-[11px] text-gray-500">{restaurantInfo.tagline}</p>
                 </div>
                 <button
                   onClick={() => setShowMenuDrawer(false)}
@@ -295,8 +288,8 @@ export default function Header({ searchQuery, onSearchChange }) {
             </div>
 
             <div className="pt-3 border-t border-gray-100 text-[11px] text-gray-500">
-              <p className="font-bold text-gray-700 mb-0.5">{RESTAURANT_INFO.address}</p>
-              <p>فيسبوك: {RESTAURANT_INFO.facebook}</p>
+              <p className="font-bold text-gray-700 mb-0.5">{restaurantInfo.address}</p>
+              <p>فيسبوك: {restaurantInfo.facebook_page || restaurantInfo.facebook}</p>
             </div>
           </div>
 

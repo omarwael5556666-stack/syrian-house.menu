@@ -1,185 +1,209 @@
-# PASTE THIS WHOLE FILE IN SUPABASE SQL EDITOR AND PRESS RUN (safe to run multiple times)
+-- Safe setup for Syrian House. This file creates or upgrades objects without dropping or truncating menu data.
+-- Grant the admin role through Supabase Auth app_metadata; never place the service-role key in the browser.
 
-drop table if exists public.menu_items cascade;
-drop table if exists public.categories cascade;
-
--- ═══════════════════════════════════════════════════════════
---  Syrian House Menu — Admin Panel Schema
---  Run in: Supabase Dashboard → SQL Editor → New query
--- ═══════════════════════════════════════════════════════════
-
--- ─── Tables ────────────────────────────────────────────────
-create table public.categories (
-  id         uuid primary key default gen_random_uuid(),
-  name       text not null unique,
+create table if not exists public.categories (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
   sort_order integer not null default 0,
   created_at timestamptz not null default now()
 );
 
-create table public.menu_items (
-  id           uuid primary key default gen_random_uuid(),
-  category_id  uuid not null references public.categories(id) on delete restrict,
-  title        text not null,
-  description  text,
-  price        numeric(10,2),
-  price_m      numeric(10,2),
-  price_l      numeric(10,2),
-  image_url    text,
+create table if not exists public.menu_items (
+  id uuid primary key default gen_random_uuid(),
+  category_id uuid not null references public.categories(id) on delete restrict,
+  title text not null,
+  description text,
+  price numeric(10,2),
+  price_m numeric(10,2),
+  price_l numeric(10,2),
+  image_url text,
   is_available boolean not null default true,
-  is_new       boolean not null default false,
-  sort_order   integer not null default 0,
-  created_at   timestamptz not null default now(),
-  updated_at   timestamptz not null default now()
+  is_new boolean not null default false,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
-create index idx_menu_items_category on public.menu_items(category_id);
+create table if not exists public.delivery_zones (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  fee numeric(10,2) not null check (fee >= 0),
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
 
--- ─── Auto-update updated_at ────────────────────────────────
-create or replace function touch_updated_at()
-returns trigger language plpgsql as $$
-begin set new.updated_at = now(); return new; end $$;
+create table if not exists public.restaurant_settings (
+  id integer primary key default 1 check (id = 1),
+  restaurant_name text not null default 'مطعم البيت السوري',
+  tagline text not null default 'أهل قويسنا',
+  english_name text not null default 'Syrian House',
+  address text not null default 'قويسنا - ميدان الفلاح - إتجاه موقف شبين',
+  order_whatsapp text not null default '201055318226',
+  facebook_page text not null default 'Syrian House 2 البيت السوري',
+  phones jsonb not null default '[{"label":"موبايل 1","number":"01221437500","raw":"+201221437500"},{"label":"موبايل 2","number":"01092992468","raw":"+201092992468"},{"label":"موبايل 3","number":"01110600785","raw":"+201110600785"},{"label":"موبايل 4","number":"01055318226","raw":"+201055318226"},{"label":"هاتف أرضي","number":"0482580187","raw":"+20482580187"}]'::jsonb,
+  accepting_orders boolean not null default true,
+  opening_time time,
+  closing_time time,
+  eta_minutes integer not null default 45 check (eta_minutes between 5 and 240),
+  minimum_order numeric(10,2) not null default 0 check (minimum_order >= 0),
+  updated_at timestamptz not null default now()
+);
+alter table public.restaurant_settings add column if not exists restaurant_name text not null default 'مطعم البيت السوري';
+alter table public.restaurant_settings add column if not exists tagline text not null default 'أهل قويسنا';
+alter table public.restaurant_settings add column if not exists english_name text not null default 'Syrian House';
+alter table public.restaurant_settings add column if not exists address text not null default 'قويسنا - ميدان الفلاح - إتجاه موقف شبين';
+alter table public.restaurant_settings add column if not exists order_whatsapp text not null default '201055318226';
+alter table public.restaurant_settings add column if not exists facebook_page text not null default 'Syrian House 2 البيت السوري';
+alter table public.restaurant_settings add column if not exists phones jsonb not null default '[{"label":"موبايل 1","number":"01221437500","raw":"+201221437500"},{"label":"موبايل 2","number":"01092992468","raw":"+201092992468"},{"label":"موبايل 3","number":"01110600785","raw":"+201110600785"},{"label":"موبايل 4","number":"01055318226","raw":"+201055318226"},{"label":"هاتف أرضي","number":"0482580187","raw":"+20482580187"}]'::jsonb;
+insert into public.restaurant_settings (id) values (1) on conflict (id) do nothing;
 
-create trigger trg_items_updated
-before update on public.menu_items
-for each row execute function touch_updated_at();
+create table if not exists public.orders (
+  id uuid primary key default gen_random_uuid(),
+  customer_name text,
+  phone text not null,
+  phone2 text,
+  zone_name text not null,
+  delivery_detail text,
+  customer_note text,
+  subtotal numeric(10,2) not null check (subtotal >= 0),
+  delivery_fee numeric(10,2) not null check (delivery_fee >= 0),
+  total numeric(10,2) not null check (total >= 0),
+  status text not null default 'pending' check (status in ('pending','confirmed','preparing','out_for_delivery','completed','cancelled')),
+  created_at timestamptz not null default now()
+);
 
--- ─── Row Level Security ────────────────────────────────────
+create table if not exists public.order_items (
+  id bigint generated always as identity primary key,
+  order_id uuid not null references public.orders(id) on delete cascade,
+  menu_item_id uuid not null,
+  title text not null,
+  size text,
+  quantity integer not null check (quantity between 1 and 99),
+  unit_price numeric(10,2) not null check (unit_price >= 0),
+  note text
+);
+
+create index if not exists idx_menu_items_category on public.menu_items(category_id);
+create index if not exists idx_orders_created_at on public.orders(created_at desc);
+create index if not exists idx_orders_status on public.orders(status);
+
+create or replace function public.touch_updated_at()
+returns trigger language plpgsql as $$ begin new.updated_at = now(); return new; end $$;
+drop trigger if exists trg_items_updated on public.menu_items;
+create trigger trg_items_updated before update on public.menu_items for each row execute function public.touch_updated_at();
+drop trigger if exists trg_settings_updated on public.restaurant_settings;
+create trigger trg_settings_updated before update on public.restaurant_settings for each row execute function public.touch_updated_at();
+
 alter table public.categories enable row level security;
-alter table public.menu_items  enable row level security;
+alter table public.menu_items enable row level security;
+alter table public.delivery_zones enable row level security;
+alter table public.restaurant_settings enable row level security;
+alter table public.orders enable row level security;
+alter table public.order_items enable row level security;
 
--- anyone (public site) can read
-create policy "public read categories" on public.categories
-  for select using (true);
-create policy "public read items" on public.menu_items
-  for select using (true);
+drop policy if exists "public read categories" on public.categories;
+drop policy if exists "public read items" on public.menu_items;
+drop policy if exists "admin write categories" on public.categories;
+drop policy if exists "admin write items" on public.menu_items;
+drop policy if exists "public read zones" on public.delivery_zones;
+drop policy if exists "admin write zones" on public.delivery_zones;
+drop policy if exists "public read restaurant settings" on public.restaurant_settings;
+drop policy if exists "admin write restaurant settings" on public.restaurant_settings;
+drop policy if exists "admin read orders" on public.orders;
+drop policy if exists "admin update orders" on public.orders;
+drop policy if exists "admin read order items" on public.order_items;
 
--- only logged-in admins can write
-create policy "admin write categories" on public.categories
-  for all to authenticated using (true) with check (true);
-create policy "admin write items" on public.menu_items
-  for all to authenticated using (true) with check (true);
+create policy "public read categories" on public.categories for select using (true);
+create policy "public read items" on public.menu_items for select using (true);
+create policy "public read zones" on public.delivery_zones for select using (true);
+create policy "public read restaurant settings" on public.restaurant_settings for select using (true);
+create policy "admin write categories" on public.categories for all to authenticated using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin') with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+create policy "admin write items" on public.menu_items for all to authenticated using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin') with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+create policy "admin write zones" on public.delivery_zones for all to authenticated using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin') with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+create policy "admin write restaurant settings" on public.restaurant_settings for all to authenticated using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin') with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+create policy "admin read orders" on public.orders for select to authenticated using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+create policy "admin update orders" on public.orders for update to authenticated using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin') with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+create policy "admin read order items" on public.order_items for select to authenticated using (exists (select 1 from public.orders o where o.id = order_id and (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'));
 
+create or replace function public.place_order(p_customer jsonb, p_zone_name text, p_items jsonb)
+returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_settings public.restaurant_settings%rowtype;
+  v_zone public.delivery_zones%rowtype;
+  v_input record;
+  v_menu public.menu_items%rowtype;
+  v_order_id uuid := gen_random_uuid();
+  v_lines jsonb := '[]'::jsonb;
+  v_subtotal numeric(10,2) := 0;
+  v_price numeric(10,2);
+  v_local_time time;
+  v_phone text := coalesce(p_customer->>'phone','');
+  v_detail text := coalesce(p_customer->>'delivery_detail','');
+  v_qty integer;
+  v_size text;
+begin
+  if jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) < 1 or jsonb_array_length(p_items) > 50 then
+    raise exception 'السلة غير صالحة';
+  end if;
+  if v_phone !~ '^01[0125][0-9]{8}$' then raise exception 'رقم الهاتف المصري غير صالح'; end if;
+  if length(coalesce(p_customer->>'name','')) > 120 or length(v_detail) > 400 or length(coalesce(p_customer->>'note','')) > 1000 then
+    raise exception 'بعض بيانات الطلب أطول من المسموح';
+  end if;
+  select * into v_settings from public.restaurant_settings where id = 1;
+  if not found or not v_settings.accepting_orders then raise exception 'المطعم متوقف عن استقبال الطلبات'; end if;
+  v_local_time := (now() at time zone 'Africa/Cairo')::time;
+  if v_settings.opening_time is not null and v_settings.closing_time is not null then
+    if v_settings.closing_time < v_settings.opening_time then
+      if not (v_local_time >= v_settings.opening_time or v_local_time < v_settings.closing_time) then raise exception 'المطعم مغلق الآن'; end if;
+    elsif not (v_local_time >= v_settings.opening_time and v_local_time < v_settings.closing_time) then
+      raise exception 'المطعم مغلق الآن';
+    end if;
+  end if;
+  select * into v_zone from public.delivery_zones where name = p_zone_name;
+  if not found then raise exception 'منطقة التوصيل غير متاحة'; end if;
+  if v_zone.fee < 0 then raise exception 'رسوم التوصيل غير صالحة'; end if;
+  if p_zone_name = 'قويسنا' and btrim(v_detail) = '' then raise exception 'العنوان التفصيلي مطلوب داخل قويسنا'; end if;
 
--- Auto-generated seed data. Run in Supabase SQL Editor.
--- WARNING: wipes existing categories/items first.
+  for v_input in select value from jsonb_array_elements(p_items) loop
+    v_qty := (v_input.value->>'quantity')::integer;
+    v_size := nullif(v_input.value->>'size','');
+    if v_qty < 1 or v_qty > 99 then raise exception 'كمية صنف غير صالحة'; end if;
+    select * into v_menu from public.menu_items where id = (v_input.value->>'id')::uuid and is_available = true;
+    if not found then raise exception 'أحد الأصناف لم يعد متاحًا'; end if;
+    if v_size = 'M' then v_price := v_menu.price_m;
+    elsif v_size = 'L' then v_price := v_menu.price_l;
+    elsif v_size is null then v_price := v_menu.price;
+    else raise exception 'مقاس الصنف غير صالح'; end if;
+    if v_price is null or v_price < 0 then raise exception 'سعر أحد الأصناف غير محدد'; end if;
+    v_subtotal := v_subtotal + v_price * v_qty;
+    v_lines := v_lines || jsonb_build_array(jsonb_build_object(
+      'id', v_menu.id, 'title', v_menu.title, 'size', v_size, 'quantity', v_qty,
+      'unit_price', v_price, 'note', left(coalesce(v_input.value->>'note',''), 300)
+    ));
+  end loop;
+  if v_subtotal < v_settings.minimum_order then raise exception 'قيمة الطلب أقل من الحد الأدنى'; end if;
 
-truncate table public.menu_items, public.categories cascade;
+  insert into public.orders(id, customer_name, phone, phone2, zone_name, delivery_detail, customer_note, subtotal, delivery_fee, total)
+  values (v_order_id, nullif(left(btrim(coalesce(p_customer->>'name','')),120),''), v_phone,
+    nullif(left(coalesce(p_customer->>'phone2',''),20),''), v_zone.name,
+    nullif(left(btrim(v_detail),400),''), nullif(left(btrim(coalesce(p_customer->>'note','')),1000),''),
+    v_subtotal, v_zone.fee, v_subtotal + v_zone.fee);
+  insert into public.order_items(order_id, menu_item_id, title, size, quantity, unit_price, note)
+  select v_order_id, (x->>'id')::uuid, x->>'title', nullif(x->>'size',''), (x->>'quantity')::integer, (x->>'unit_price')::numeric, nullif(x->>'note','')
+  from jsonb_array_elements(v_lines) x;
+  return jsonb_build_object('id', v_order_id, 'subtotal', v_subtotal, 'delivery_fee', v_zone.fee, 'total', v_subtotal + v_zone.fee, 'eta_minutes', v_settings.eta_minutes);
+end $$;
+revoke all on function public.place_order(jsonb, text, jsonb) from public;
+grant execute on function public.place_order(jsonb, text, jsonb) to anon, authenticated;
 
-insert into public.categories (id, name, sort_order) values
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'سندوتشات البيت السوري', 0),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'الكريبات', 1),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'المقبلات', 2),
-  ('6ba1b8be-e88d-4e10-b8d9-8ecb533eb5bc', 'وجبات الغربي', 3),
-  ('2cfd8e27-33e2-4e18-a6ca-6183ed465976', 'الفراخ الشواية', 4),
-  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'أوزان الشاورما', 5),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'أطباق العربي وفتات الشاورما', 6),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'البيتزا', 7),
-  ('1f4503ce-d4c5-42fc-a62e-43bb81653d90', 'المكرونات', 8),
-  ('4c1356f9-7b61-4efc-b724-2036c6aac942', 'الإضافات', 9),
-  ('18ebda76-1343-4790-8956-5c74cf5b1d59', 'إضافات البيتزا', 10);
-
-insert into public.menu_items
-  (category_id, title, description, price, price_m, price_l, is_new, is_available, sort_order)
-values
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'شاورما فراخ', 'شاورما فراخ - شرايح خيار توميه', 90, null, null, false, true, 0),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'شاورما لحم', 'شاورما لحمه - شرايح خيار - طحينه - شرايح طماطم', 95, null, null, false, true, 1),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'شاورما ميكس', 'شاورما لحمه+فراخ - شرايح خيار - طحينه', 100, null, null, false, true, 2),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'شاورما كريسبي', 'قطع كريسبي+شاورمافراخ - توميه - كاتشب', 110, null, null, false, true, 3),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'ساندوتش كريسبي', 'قطع كريسبي - كاتشب - توميه', 100, null, null, false, true, 4),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'ساندوتش زنجر', 'قطع زنجر - كاتشب - توميه', 100, null, null, false, true, 5),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'ساندوتش شيش طاووق', 'قطع شيش طاووق - توميه', 100, null, null, false, true, 6),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'شاورما لحمة اكسترا', 'إضافة بطاطس + موتزريلا', 95, null, null, false, true, 7),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'شاورما فراخ اكسترا', 'إضافة بطاطس + موتزريلا', 100, null, null, false, true, 8),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'ساندوتش ميكس فراخ', 'شاورما فراخ + شيش طاووق + كريسبي + كاتشب + توميه', 110, null, null, false, true, 9),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'ساندوتش بطاطس سوري', 'بطاطس + توميه + كاتشب ', 40, null, null, false, true, 10),
-  ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'ساندوتش بطاطس موتزريلا', null, 50, null, null, false, true, 11),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب شاورما دجاج', null, 100, null, null, false, true, 0),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب شاورما لحمة', null, 105, null, null, false, true, 1),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب شاورما ميكس', null, 110, null, null, false, true, 2),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب كريسبي', null, 100, null, null, false, true, 3),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب زنجر', null, 100, null, null, false, true, 4),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب شيش طاووق', null, 100, null, null, false, true, 5),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب شيش بطاطس', null, 110, null, null, false, true, 6),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب كريسبي بطاطس', null, 110, null, null, false, true, 7),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب زنجر بطاطس', null, 110, null, null, false, true, 8),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب ميكس فراخ', null, 120, null, null, false, true, 9),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب بطاطس', null, 55, null, null, false, true, 10),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب ميكسيكي حار', null, 100, null, null, false, true, 11),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب ميكس جبن وبطاطس', null, 70, null, null, false, true, 12),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'كريب فاهيتا دجاج', null, 100, null, null, false, true, 13),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'تومية صغيرة', null, 20, null, null, false, true, 0),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'تومية كبيرة', null, 30, null, null, false, true, 1),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'مخلل سوري', null, 10, null, null, false, true, 2),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'عيش محمص', null, 20, null, null, false, true, 3),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'عيش كريب', null, 5, null, null, false, true, 4),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'عيش سوري', null, 4, null, null, false, true, 5),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'طبق بطاطس', null, 25, null, null, false, true, 6),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'محمره صغيره', null, 20, null, null, false, true, 7),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', ' محمره كبيره', null, 30, null, null, false, true, 8),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'طبق سمبوسة 3 قطع جبنة', null, 20, null, null, false, true, 9),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'طبق سمبوسة 3 قطع لحمة', null, 25, null, null, false, true, 10),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'طبق أرز', null, 30, null, null, false, true, 11),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'سلطة كولسلو', null, 30, null, null, false, true, 12),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'طحينة', null, 30, null, null, false, true, 13),
-  ('6ba1b8be-e88d-4e10-b8d9-8ecb533eb5bc', 'وجبة ميكس فراخ', 'يقدم مع تومية / أرز بسمتي / بطاطس / مخلل / عيش / سمبوسة', 180, null, null, false, true, 0),
-  ('6ba1b8be-e88d-4e10-b8d9-8ecb533eb5bc', 'وجبة كريسبي', 'يقدم مع تومية / أرز / بطاطس / مخلل / عيش / سمبوسة', 175, null, null, false, true, 1),
-  ('6ba1b8be-e88d-4e10-b8d9-8ecb533eb5bc', 'وجبة تشيش طاووق', 'يقدم مع تومية / أرز / بطاطس / مخلل / عيش / سمبوسة', 175, null, null, false, true, 2),
-  ('6ba1b8be-e88d-4e10-b8d9-8ecb533eb5bc', 'وجبة زنجر', 'يقدم مع تومية / أرز / بطاطس / مخلل / عيش / سمبوسة', 175, null, null, false, true, 3),
-  ('2cfd8e27-33e2-4e18-a6ca-6183ed465976', 'فرخة مشوية شواية', 'يقدم مع تومية + عيش + مخلل + رز', 380, null, null, true, true, 0),
-  ('2cfd8e27-33e2-4e18-a6ca-6183ed465976', 'نصف فرخة مشوية', 'يقدم مع تومية + عيش + مخلل+ رز', 190, null, null, true, true, 1),
-  ('2cfd8e27-33e2-4e18-a6ca-6183ed465976', 'ربع فرخة مشوية (ورك)', 'يقدم مع تومية + عيش + مخلل + رز', 120, null, null, true, true, 2),
-  ('2cfd8e27-33e2-4e18-a6ca-6183ed465976', 'ربع فرخة مشوية (صدر)', 'يقدم مع تومية + عيش + مخلل + رز', 135, null, null, true, true, 3),
-  ('2cfd8e27-33e2-4e18-a6ca-6183ed465976', 'فرخة سادة', null, 340, null, null, true, true, 4),
-  ('2cfd8e27-33e2-4e18-a6ca-6183ed465976', 'نصف فرخة سادة', null, 180, null, null, true, true, 5),
-  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'ربع كيلو شاورما فراخ', null, 175, null, null, false, true, 0),
-  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'ربع كيلو شاورما لحمة', null, 175, null, null, false, true, 1),
-  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'نصف كيلو شاورما فراخ', null, 350, null, null, false, true, 2),
-  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'نصف كيلو شاورما لحمة', null, 350, null, null, false, true, 3),
-  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'ربع كيلو شيش', null, 175, null, null, false, true, 4),
-  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'ربع كيلو كريسبي', null, 175, null, null, false, true, 5),
-  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'نصف كيلو شيش', null, 350, null, null, false, true, 6),
-  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'نصف كيلو كريسبي', null, 350, null, null, false, true, 7),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'فتة شاورما دجاج', 'تومية + عيش محمص + مخلل', 145, null, null, false, true, 0),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'فتة شاورما لحمة', 'تومية + عيش محمص + مخلل', 145, null, null, false, true, 1),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'فتة شاورما ميكس', 'تومية + عيش محمص + مخلل', 150, null, null, false, true, 2),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'فتة شيش طاووق', 'تومية + عيش محمص + مخلل', 150, null, null, false, true, 3),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'شاورما دجاج عربي مقطع ساندوتش واحد', 'بطاطس + تومية + مخلل سوري + محمرة + عيش سوري', 130, null, null, false, true, 4),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'شاورما لحمة عربي مقطع ساندوتش واحد', 'بطاطس + تومية + مخلل سوري + محمرة + عيش سوري', 135, null, null, false, true, 5),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'شاورما ميكس عربي مقطع ساندوتش واحد', 'بطاطس + تومية + مخلل سوري + محمرة + عيش سوري', 135, null, null, false, true, 6),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'شاورما دجاج عربي مقطع دبل 2 ساندوتش', 'يقدم مع خضار مشكل و بطاطس وتوميه ومخلل', 220, null, null, false, true, 7),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'شاورما لحمة عربي مقطع دبل 2 ساندوتش', 'يقدم مع خضار مشكل وبطاطس و توميه ومخلل', 220, null, null, false, true, 8),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'شاورما ميكس عربي مقطع دبل 2 ساندوتش', 'يقدم مع خضار مشككل وبطاطس و توميه ومخلل', null, null, null, false, true, 9),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'وجبة عربي عائلي فراخ', '3 ساندوتش عربي مقطع + مخلل + محمرة + عيش سوري', 350, null, null, false, true, 10),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'وجبة عربي عائلي لحمة', '3 ساندوتش عربي مقطع + مخلل + محمرة + عيش سوري', 350, null, null, false, true, 11),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'وجبة عربي عائلي ميكس', '3 ساندوتش عربي مقطع + مخلل + محمرة + عيش سوري', 350, null, null, false, true, 12),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا مرجريتا', null, null, 115, 140, false, true, 0),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا خضراوات', null, null, 115, 140, false, true, 1),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا سوسيس', null, null, 135, 155, false, true, 2),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا سجق', null, null, 135, 155, false, true, 3),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا لحم مفروم', null, null, 135, 160, false, true, 4),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا تشيش', null, null, 135, 160, false, true, 5),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا كريسبي', null, null, 135, 160, false, true, 6),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا شاورما فراخ', null, null, 135, 160, false, true, 7),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا شاورما لحم', null, null, 140, 165, false, true, 8),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا ميكس شاورما', null, null, 140, 165, false, true, 9),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا ميكس لحوم', null, null, 140, 165, false, true, 10),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا ميكس فراخ', null, null, 130, 140, false, true, 11),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا ماشروم', null, null, 130, 150, false, true, 12),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا جمبري', null, null, 155, 170, false, true, 13),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا تشيكن رانش', null, null, 145, 165, false, true, 14),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'بيتزا تشيكن باربيكيو', null, null, 145, 165, false, true, 15),
-  ('1f4503ce-d4c5-42fc-a62e-43bb81653d90', 'نجرسكو فراخ', null, 110, null, null, true, true, 0),
-  ('1f4503ce-d4c5-42fc-a62e-43bb81653d90', 'مكرونة بشاميل لحم مفرومة', null, 110, null, null, true, true, 1),
-  ('1f4503ce-d4c5-42fc-a62e-43bb81653d90', 'مكرونة وايت صوص فراخ', null, 110, null, null, true, true, 2),
-  ('1f4503ce-d4c5-42fc-a62e-43bb81653d90', 'مكرونة وايت صوص تشيش', null, 110, null, null, true, true, 3),
-  ('1f4503ce-d4c5-42fc-a62e-43bb81653d90', 'مكرونة وايت صوص كريسبي', null, 110, null, null, true, true, 4),
-  ('4c1356f9-7b61-4efc-b724-2036c6aac942', 'بطاطس', null, 10, null, null, true, true, 0),
-  ('4c1356f9-7b61-4efc-b724-2036c6aac942', 'موتزريلا', null, 15, null, null, true, true, 1),
-  ('4c1356f9-7b61-4efc-b724-2036c6aac942', 'تشيدر', null, 20, null, null, true, true, 2),
-  ('4c1356f9-7b61-4efc-b724-2036c6aac942', 'فراخ', null, 25, null, null, true, true, 3),
-  ('18ebda76-1343-4790-8956-5c74cf5b1d59', 'حشو أطراف', null, null, 30, 40, false, true, 0),
-  ('18ebda76-1343-4790-8956-5c74cf5b1d59', 'إضافات لحم', null, null, 40, 45, false, true, 1),
-  ('18ebda76-1343-4790-8956-5c74cf5b1d59', 'إضافات فراخ', null, null, 40, 45, false, true, 2),
-  ('18ebda76-1343-4790-8956-5c74cf5b1d59', 'إضافة جمبري', null, null, 50, 60, false, true, 3),
-  ('18ebda76-1343-4790-8956-5c74cf5b1d59', 'إضافة موتزريلا', null, null, 30, 40, false, true, 4);
-
+create or replace function public.get_order_status(p_order_id uuid, p_phone text)
+returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare v_order public.orders%rowtype;
+begin
+  if p_phone !~ '^01[0125][0-9]{8}$' then return null; end if;
+  select * into v_order from public.orders where id = p_order_id and phone = p_phone;
+  if not found then return null; end if;
+  return jsonb_build_object('id', v_order.id, 'status', v_order.status, 'created_at', v_order.created_at, 'total', v_order.total, 'zone_name', v_order.zone_name);
+end $$;
+revoke all on function public.get_order_status(uuid, text) from public;
+grant execute on function public.get_order_status(uuid, text) to anon, authenticated;

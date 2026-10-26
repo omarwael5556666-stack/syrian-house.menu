@@ -42,7 +42,7 @@ body {
 /* ─── Mobile Frame / App Shell ───────────────────── */
 .app-shell {
   width: 100%;
-  max-width: 480px;
+  max-width: 1120px;
   margin-left: auto;
   margin-right: auto;
   min-height: 100vh;
@@ -244,7 +244,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 480px;
+  max-width: 1120px;
   height: 68px;
   background: #FFFFFF;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
