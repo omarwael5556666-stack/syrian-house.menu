@@ -23,6 +23,7 @@ const knownIds = new Map([
 ]);
 const catIds = new Map(CATEGORIES.map((name, i) => [name, knownIds.get(name) ?? `00000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`]));
 const catLines = CATEGORIES.map((name, i) => `  ('${catIds.get(name)}', '${esc(name)}', ${i})`);
+const categoryOrderLines = CATEGORIES.map((name, i) => `  ('${esc(name)}', ${i})`);
 
 const sortCounter = {};
 const itemLines = menuData.map((item) => {
@@ -44,6 +45,14 @@ where legacy.name = 'أطباق العربي وفتات الشاورما'
 insert into public.categories (id, name, sort_order) values
 ${catLines.join(",\n")}
 on conflict do nothing;
+
+-- Keep the four requested categories immediately after sandwiches.
+update public.categories as category
+set sort_order = requested.sort_order
+from (values
+${categoryOrderLines.join(",\n")}
+) as requested(name, sort_order)
+where category.name = requested.name;
 
 -- Move existing fata dishes out of the legacy combined category before inserting any missing rows.
 update public.menu_items mi

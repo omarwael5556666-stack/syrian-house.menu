@@ -17,6 +17,24 @@ insert into public.categories (id, name, sort_order)
 values ('8e1d557a-2f74-42cc-97ae-e392cb749c85', 'فتات الشاورما', 6)
 on conflict do nothing;
 
+update public.categories as category
+set sort_order = requested.sort_order
+from (values
+  ('سندوتشات البيت السوري', 0),
+  ('فتات الشاورما', 1),
+  ('أطباق العربي', 2),
+  ('البيتزا', 3),
+  ('المكرونات', 4),
+  ('الكريبات', 5),
+  ('المقبلات', 6),
+  ('وجبات الغربي', 7),
+  ('الفراخ الشواية', 8),
+  ('أوزان الشاورما', 9),
+  ('الإضافات', 10),
+  ('إضافات البيتزا', 11)
+) as requested(name, sort_order)
+where category.name = requested.name;
+
 update public.menu_items mi
 set category_id = (select id from public.categories where name = 'فتات الشاورما')
 where mi.title in (

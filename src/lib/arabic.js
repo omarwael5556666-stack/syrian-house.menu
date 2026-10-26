@@ -1,4 +1,5 @@
 const ARABIC_DIGITS = /[\u0660-\u0669\u06F0-\u06F9]/g;
+const MONEY_FORMATTER = new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 2 });
 
 export function normalizeDigits(value) {
   return String(value ?? "").replace(ARABIC_DIGITS, (digit) => {
@@ -31,5 +32,5 @@ export function isValidEgyptianMobile(value) {
 
 export function formatMoney(value) {
   if (!Number.isFinite(Number(value))) return "—";
-  return new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 2 }).format(Number(value));
+  return MONEY_FORMATTER.format(Number(value));
 }

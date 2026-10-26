@@ -4,6 +4,12 @@ import { navigate } from "../lib/router";
 import { isDbConfigured, supabase } from "../lib/supabase";
 import { formatMoney, isValidEgyptianMobile, normalizeDigits } from "../lib/arabic";
 
+const ORDER_DATE_FORMATTER = new Intl.DateTimeFormat("ar-EG", {
+  dateStyle: "medium",
+  timeStyle: "short",
+  timeZone: "Africa/Cairo",
+});
+
 const STATUS_LABELS = {
   pending: "وصل للمطعم",
   confirmed: "تم تأكيد الطلب",
@@ -62,7 +68,7 @@ export default function OrderTracking() {
             <label htmlFor="track-phone" className="mb-1 block text-xs font-bold text-gray-700">رقم الموبايل</label>
             <input id="track-phone" type="tel" inputMode="tel" dir="ltr" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01xxxxxxxxx" className="h-11 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 text-sm outline-none focus:border-[#E4002B]" />
           </div>
-          <button disabled={loading} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#E4002B] text-sm font-black text-white disabled:opacity-60">
+          <button type="submit" disabled={loading} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#E4002B] text-sm font-black text-white disabled:opacity-60">
             <Search className="w-4 h-4" /> {loading ? "جارٍ البحث…" : "عرض حالة الطلب"}
           </button>
         </form>
@@ -76,7 +82,7 @@ export default function OrderTracking() {
             <div className="mt-4 grid grid-cols-2 gap-3 border-t border-green-200 pt-4 text-xs text-gray-700">
               <p>المنطقة: <strong>{order.zone_name}</strong></p>
               <p>الإجمالي: <strong>{formatMoney(order.total)} ج.م</strong></p>
-              <p className="col-span-2">وقت الطلب: <strong>{new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium", timeStyle: "short", timeZone: "Africa/Cairo" }).format(new Date(order.created_at))}</strong></p>
+              <p className="col-span-2">وقت الطلب: <strong>{ORDER_DATE_FORMATTER.format(new Date(order.created_at))}</strong></p>
             </div>
           </section>
         )}

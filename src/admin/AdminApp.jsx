@@ -88,10 +88,13 @@ function LoginScreen() {
         className="bg-surface border border-line rounded-lg p-6 max-w-sm mx-auto mt-24"
       >
         <h1 className="text-lg font-bold mb-1">لوحة تحكم المطعم</h1>
-        <p className="text-sm text-fg-muted mb-6">تسجيل دخول المسؤول</p>
+        <p className="text-sm text-fg-muted mb-2">تسجيل دخول المسؤول</p>
+        <p className="text-xs text-fg-muted leading-relaxed mb-6">
+          اسم المستخدم هو البريد الإلكتروني المسجّل في Supabase؛ تغييره يحتاج دخول مالك المشروع إلى إدارة المستخدمين.
+        </p>
 
         <label className="block text-xs font-bold text-fg-secondary mb-1" htmlFor="admin-email">
-          البريد الإلكتروني
+          البريد الإلكتروني (اسم المستخدم)
         </label>
         <input
           id="admin-email"

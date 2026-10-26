@@ -9,18 +9,37 @@ where legacy.name = 'أطباق العربي وفتات الشاورما'
 
 insert into public.categories (id, name, sort_order) values
   ('8fd02f2f-0cbe-4b81-bca1-231c5d7cede3', 'سندوتشات البيت السوري', 0),
-  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'الكريبات', 1),
-  ('21b33ada-a706-49c2-bd97-1519af2320da', 'المقبلات', 2),
-  ('6ba1b8be-1877-4647-aacf-3ec91a86bf58', 'وجبات الغربي', 3),
-  ('2cfd8e27-33e2-4e18-a6ca-6183ed465976', 'الفراخ الشواية', 4),
-  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'أوزان الشاورما', 5),
-  ('8e1d557a-2f74-42cc-97ae-e392cb749c85', 'فتات الشاورما', 6),
-  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'أطباق العربي', 7),
-  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'البيتزا', 8),
-  ('1f4503ce-d4c5-42fc-a62e-43bb81653d90', 'المكرونات', 9),
+  ('8e1d557a-2f74-42cc-97ae-e392cb749c85', 'فتات الشاورما', 1),
+  ('7e4706b2-1877-4647-aacf-3ec91a86bf58', 'أطباق العربي', 2),
+  ('f41bf8ba-0079-4cf6-ae8c-aabc06bec8f0', 'البيتزا', 3),
+  ('1f4503ce-d4c5-42fc-a62e-43bb81653d90', 'المكرونات', 4),
+  ('927051c8-aa2d-42d4-886f-7185c92d6d8c', 'الكريبات', 5),
+  ('21b33ada-a706-49c2-bd97-1519af2320da', 'المقبلات', 6),
+  ('6ba1b8be-1877-4647-aacf-3ec91a86bf58', 'وجبات الغربي', 7),
+  ('2cfd8e27-33e2-4e18-a6ca-6183ed465976', 'الفراخ الشواية', 8),
+  ('ca16c4a3-6d28-4051-ba98-913beb2eed6e', 'أوزان الشاورما', 9),
   ('4c1356f9-7b61-4efc-b724-2036c6aac942', 'الإضافات', 10),
   ('18ebda76-1343-4790-8956-5c74cf5b1d59', 'إضافات البيتزا', 11)
 on conflict do nothing;
+
+-- Keep the four requested categories immediately after sandwiches.
+update public.categories as category
+set sort_order = requested.sort_order
+from (values
+  ('سندوتشات البيت السوري', 0),
+  ('فتات الشاورما', 1),
+  ('أطباق العربي', 2),
+  ('البيتزا', 3),
+  ('المكرونات', 4),
+  ('الكريبات', 5),
+  ('المقبلات', 6),
+  ('وجبات الغربي', 7),
+  ('الفراخ الشواية', 8),
+  ('أوزان الشاورما', 9),
+  ('الإضافات', 10),
+  ('إضافات البيتزا', 11)
+) as requested(name, sort_order)
+where category.name = requested.name;
 
 -- Move existing fata dishes out of the legacy combined category before inserting any missing rows.
 update public.menu_items mi

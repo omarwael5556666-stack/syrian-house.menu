@@ -16,6 +16,8 @@ const CACHE_KEY = "sh_menu_cache_v2";
 const LEGACY_COMBINED_CATEGORY = "أطباق العربي وفتات الشاورما";
 const FATTA_CATEGORY = "فتات الشاورما";
 const ARABIC_CATEGORY = "أطباق العربي";
+const SANDWICH_CATEGORY = "سندوتشات البيت السوري";
+const PRIORITY_CATEGORIES = [FATTA_CATEGORY, ARABIC_CATEGORY, "البيتزا", "المكرونات"];
 
 function normalizeItemCategory(category, title = "") {
   if (category !== LEGACY_COMBINED_CATEGORY) return category;
@@ -26,12 +28,12 @@ function normalizeCategoryList(names = []) {
   const expanded = names.flatMap((name) =>
     name === LEGACY_COMBINED_CATEGORY ? [FATTA_CATEGORY, ARABIC_CATEGORY] : [name]
   );
-  const pairIndex = expanded.findIndex((name) => name === FATTA_CATEGORY || name === ARABIC_CATEGORY);
-  if (pairIndex === -1) return expanded;
-
-  const remaining = expanded.filter((name) => name !== FATTA_CATEGORY && name !== ARABIC_CATEGORY);
-  remaining.splice(Math.min(pairIndex, remaining.length), 0, FATTA_CATEGORY, ARABIC_CATEGORY);
-  return [...new Set(remaining)];
+  const unique = [...new Set(expanded)];
+  const prioritized = PRIORITY_CATEGORIES.filter((name) => unique.includes(name));
+  const remaining = unique.filter((name) => !PRIORITY_CATEGORIES.includes(name));
+  const sandwichIndex = remaining.indexOf(SANDWICH_CATEGORY);
+  remaining.splice(sandwichIndex < 0 ? 0 : sandwichIndex + 1, 0, ...prioritized);
+  return remaining;
 }
 
 function normalizeSnapshot(snapshot) {

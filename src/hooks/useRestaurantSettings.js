@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { isDbConfigured, supabase } from "../lib/supabase";
 import { RESTAURANT_INFO } from "../data/menuData";
 
+const CAIRO_TIME_FORMATTER = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Africa/Cairo",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
 export const DEFAULT_SETTINGS = {
   restaurant_name: RESTAURANT_INFO.name,
   tagline: RESTAURANT_INFO.tagline,
@@ -20,7 +27,7 @@ export const DEFAULT_SETTINGS = {
 export function isRestaurantOpen(settings, date = new Date()) {
   if (!settings?.accepting_orders) return false;
   if (!settings.opening_time || !settings.closing_time) return true;
-  const timeParts = new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Cairo", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(date);
+  const timeParts = CAIRO_TIME_FORMATTER.formatToParts(date);
   const current = Number(timeParts.find((part) => part.type === "hour")?.value) * 60 + Number(timeParts.find((part) => part.type === "minute")?.value);
   const [openHour, openMinute] = settings.opening_time.split(":").map(Number);
   const [closeHour, closeMinute] = settings.closing_time.split(":").map(Number);

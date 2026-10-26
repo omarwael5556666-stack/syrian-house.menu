@@ -111,155 +111,200 @@ function getItemImage(item) {
   return FOOD_PHOTOS.shawarmaChicken;
 }
 
+function MenuCardImage({ item, source, imageError, onImageError, isFavorite, onToggleFavorite }) {
+  return (
+    <div className="relative w-full aspect-[4/3] rounded-xl sm:rounded-2xl mb-2.5 overflow-hidden bg-gradient-to-b from-orange-50/50 to-gray-50 shadow-inner group-hover:shadow-sm transition-all">
+      {source && !imageError ? (
+        <img
+          src={source}
+          alt={item.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          loading="lazy"
+          onError={onImageError}
+        />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-gray-400">
+          <ImageOff className="w-7 h-7" />
+          <span className="text-[10px] font-bold">صورة غير متاحة</span>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onToggleFavorite(item.id);
+        }}
+        className={`absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-200 shadow-xs ${
+          isFavorite
+            ? "text-red-500 bg-white/95 shadow-red-500/20 scale-105"
+            : "text-gray-600 hover:text-red-500 bg-white/80 hover:bg-white"
+        }`}
+        aria-label={isFavorite ? "إزالة من المفضلة" : "إضافة للمفضلة"}
+        aria-pressed={isFavorite}
+      >
+        <Heart className={`w-3.5 h-3.5 ${isFavorite ? "fill-current" : ""}`} />
+      </button>
+    </div>
+  );
+}
+
+function MenuCardDetails({ item }) {
+  return (
+    <div className="mb-2 text-right">
+      <h3 className="font-black text-gray-900 text-sm leading-snug line-clamp-2 min-h-10">
+        {item.title}
+        {item.isNew && <span className="new-badge ms-1.5 align-middle">جديد</span>}
+      </h3>
+
+      {item.description ? (
+        <p className="text-xs text-gray-600 leading-relaxed mt-1 line-clamp-3 min-h-[48px]">
+          {item.description}
+        </p>
+      ) : (
+        <p className="text-xs text-gray-500 mt-1 line-clamp-2 min-h-[48px]">
+          {item.category}
+        </p>
+      )}
+
+      {item.isAvailable === false && (
+        <p className="mt-1 text-[11px] font-bold text-red-600">غير متاح حاليًا</p>
+      )}
+    </div>
+  );
+}
+
+function SizeSelector({ item, selectedSize, onSelectSize }) {
+  return (
+    <div className="flex items-center justify-between gap-1 mb-2 bg-gray-100/90 p-0.5 rounded-lg text-xs font-black">
+      <button
+        type="button"
+        onClick={() => onSelectSize("M")}
+        className={`flex-1 py-1 rounded-md transition-all ${
+          selectedSize === "M" ? "bg-white text-[#E4002B] shadow-xs" : "text-gray-500 hover:text-gray-800"
+        }`}
+      >
+        وسط: {item.priceM} ج
+      </button>
+      <button
+        type="button"
+        onClick={() => onSelectSize("L")}
+        className={`flex-1 py-1 rounded-md transition-all ${
+          selectedSize === "L" ? "bg-white text-[#E4002B] shadow-xs" : "text-gray-500 hover:text-gray-800"
+        }`}
+      >
+        كبير: {item.priceL} ج
+      </button>
+    </div>
+  );
+}
+
+function QuantityControl({ quantity, onDecrease, onIncrease }) {
+  return (
+    <div className="flex items-center gap-2 rounded-full bg-red-50 p-1" dir="ltr" aria-label={`الكمية في السلة ${quantity}`}>
+      <button type="button" onClick={onDecrease} aria-label="تقليل الكمية" className="w-8 h-8 rounded-full bg-white text-[#E4002B] flex items-center justify-center shadow-sm">
+        <Minus className="w-4 h-4" />
+      </button>
+      <span aria-live="polite" className="min-w-5 text-center text-sm font-black text-gray-900">{quantity}</span>
+      <button type="button" onClick={onIncrease} aria-label="زيادة الكمية" className="w-8 h-8 rounded-full bg-[#E4002B] text-white flex items-center justify-center shadow-sm">
+        <Plus className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
+function CardAction({ item, quantity, available, onAdd, onSetQuantity }) {
+  if (quantity > 0) {
+    return (
+      <QuantityControl
+        quantity={quantity}
+        onDecrease={() => onSetQuantity(quantity - 1)}
+        onIncrease={() => onSetQuantity(quantity + 1)}
+      />
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onAdd}
+      disabled={!available}
+      className="w-9 h-9 rounded-full bg-[#E4002B] hover:bg-[#C8102E] disabled:bg-gray-300 disabled:shadow-none text-white flex items-center justify-center shadow-md active:scale-90 transition-all"
+      aria-label={`أضف ${item.title} للسلة`}
+      title={available ? "أضف للسلة" : "السعر غير محدد أو الصنف غير متاح"}
+    >
+      <Plus className="w-4 h-4 stroke-[2.5]" />
+    </button>
+  );
+}
+
+function CardPurchaseArea({
+  item,
+  hasSizes,
+  selectedSize,
+  onSelectSize,
+  price,
+  quantity,
+  available,
+  onAdd,
+  onSetQuantity,
+}) {
+  const priceLabel = hasSizes
+    ? `${price} ج.م`
+    : Number.isFinite(item.price)
+      ? `${item.price} ج.م`
+      : "السعر غير محدد";
+
+  return (
+    <div className="pt-2 border-t border-gray-100 mt-auto">
+      {hasSizes && <SizeSelector item={item} selectedSize={selectedSize} onSelectSize={onSelectSize} />}
+      <div className="flex items-center justify-between">
+        <div>
+          <span className="text-[9px] text-gray-400 block leading-none mb-0.5">السعر</span>
+          <span className="text-xs sm:text-sm font-black text-gray-900 tabular-nums">{priceLabel}</span>
+        </div>
+        <CardAction
+          item={item}
+          quantity={quantity}
+          available={available}
+          onAdd={onAdd}
+          onSetQuantity={onSetQuantity}
+        />
+      </div>
+    </div>
+  );
+}
+
 function MenuCard({ item, onAdd, isFavorite, onToggleFavorite, quantityForSize, onSetQuantity, canOrder = true }) {
   const [selectedSize, setSelectedSize] = useState("M");
-  const [imgError, setImgError] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const hasSizes = Number.isFinite(item.priceM) && Number.isFinite(item.priceL);
   const price = hasSizes ? (selectedSize === "M" ? item.priceM : item.priceL) : item.price;
   const quantity = quantityForSize?.(hasSizes ? selectedSize : null) || 0;
   const available = canOrder && item.isAvailable !== false && Number.isFinite(price) && price >= 0;
 
-  const foodImage = getItemImage(item);
-
-  function handleAdd() {
-    if (hasSizes) {
-      onAdd(item.id, selectedSize);
-    } else {
-      onAdd(item.id, null);
-    }
-  }
-
   return (
     <article className="bg-white rounded-2xl p-2.5 sm:p-3 shadow-xs border border-gray-100/90 flex flex-col justify-between hover:shadow-md transition-all duration-200 relative group">
-      {/* ─── Real Food Visual with Floating Heart ──── */}
-      <div className="relative w-full aspect-[4/3] rounded-xl sm:rounded-2xl mb-2.5 overflow-hidden bg-gradient-to-b from-orange-50/50 to-gray-50 shadow-inner group-hover:shadow-sm transition-all">
-        {foodImage && !imgError ? (
-          <img
-            src={foodImage}
-            alt={item.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-gray-400">
-            <ImageOff className="w-7 h-7" />
-            <span className="text-[10px] font-bold">صورة غير متاحة</span>
-          </div>
-        )}
-
-        {/* Top Favorite Heart (Floating on Image) */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleFavorite(item.id);
-          }}
-          className={`absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-200 shadow-xs ${
-            isFavorite
-              ? "text-red-500 bg-white/95 shadow-red-500/20 scale-105"
-              : "text-gray-600 hover:text-red-500 bg-white/80 hover:bg-white"
-          }`}
-          aria-label={isFavorite ? "إزالة من المفضلة" : "إضافة للمفضلة"}
-          aria-pressed={isFavorite}
-        >
-          <Heart className={`w-3.5 h-3.5 ${isFavorite ? "fill-current" : ""}`} />
-        </button>
-      </div>
-
-      {/* ─── Product Title & Description ───────────── */}
-      <div className="mb-2 text-right">
-        <h3 className="font-black text-gray-900 text-sm leading-snug line-clamp-2 min-h-10">
-          {item.title}
-          {item.isNew && <span className="new-badge ms-1.5 align-middle">جديد</span>}
-        </h3>
-
-        {item.description ? (
-          <p className="text-xs text-gray-600 leading-relaxed mt-1 line-clamp-3 min-h-[48px]">
-            {item.description}
-          </p>
-        ) : (
-          <p className="text-xs text-gray-500 mt-1 line-clamp-2 min-h-[48px]">
-            {item.category}
-          </p>
-        )}
-
-        {item.isAvailable === false && <p className="mt-1 text-[11px] font-bold text-red-600">غير متاح حاليًا</p>}
-      </div>
-
-      {/* ─── Bottom Price & Add Action ─────────────── */}
-      <div className="pt-2 border-t border-gray-100 mt-auto">
-        {hasSizes ? (
-          <div>
-            {/* Size Selector Tabs */}
-            <div className="flex items-center justify-between gap-1 mb-2 bg-gray-100/90 p-0.5 rounded-lg text-xs font-black">
-              <button
-                type="button"
-                onClick={() => setSelectedSize("M")}
-                className={`flex-1 py-1 rounded-md transition-all ${
-                  selectedSize === "M"
-                    ? "bg-white text-[#E4002B] shadow-xs"
-                    : "text-gray-500 hover:text-gray-800"
-                }`}
-              >
-                وسط: {item.priceM} ج
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedSize("L")}
-                className={`flex-1 py-1 rounded-md transition-all ${
-                  selectedSize === "L"
-                    ? "bg-white text-[#E4002B] shadow-xs"
-                    : "text-gray-500 hover:text-gray-800"
-                }`}
-              >
-                كبير: {item.priceL} ج
-              </button>
-            </div>
-
-            {/* Price and Add button */}
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-[9px] text-gray-400 block leading-none mb-0.5">السعر</span>
-                <span className="text-xs sm:text-sm font-black text-gray-900 tabular-nums">
-                  {selectedSize === "M" ? item.priceM : item.priceL} ج.م
-                </span>
-              </div>
-              {quantity > 0 ? (
-                <div className="flex items-center gap-2 rounded-full bg-red-50 p-1" dir="ltr" aria-label={`الكمية في السلة ${quantity}`}>
-                  <button type="button" onClick={() => onSetQuantity(hasSizes ? selectedSize : null, quantity - 1)} aria-label="تقليل الكمية" className="w-8 h-8 rounded-full bg-white text-[#E4002B] flex items-center justify-center shadow-sm"><Minus className="w-4 h-4" /></button>
-                  <span aria-live="polite" className="min-w-5 text-center text-sm font-black text-gray-900">{quantity}</span>
-                  <button type="button" onClick={() => onSetQuantity(hasSizes ? selectedSize : null, quantity + 1)} aria-label="زيادة الكمية" className="w-8 h-8 rounded-full bg-[#E4002B] text-white flex items-center justify-center shadow-sm"><Plus className="w-4 h-4" /></button>
-                </div>
-              ) : (
-                <button onClick={handleAdd} disabled={!available} className="w-9 h-9 rounded-full bg-[#E4002B] hover:bg-[#C8102E] disabled:bg-gray-300 disabled:shadow-none text-white flex items-center justify-center shadow-md active:scale-90 transition-all" aria-label={`أضف ${item.title} للسلة`} title={available ? "أضف للسلة" : "الصنف غير متاح"}>
-                  <Plus className="w-4 h-4 stroke-[2.5]" />
-                </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-[9px] text-gray-400 block leading-none mb-0.5">السعر</span>
-                <span className="text-xs sm:text-sm font-black text-gray-900 tabular-nums">
-                  {Number.isFinite(item.price) ? `${item.price} ج.م` : "السعر غير محدد"}
-              </span>
-            </div>
-
-            {quantity > 0 ? (
-              <div className="flex items-center gap-2 rounded-full bg-red-50 p-1" dir="ltr" aria-label={`الكمية في السلة ${quantity}`}>
-                <button type="button" onClick={() => onSetQuantity(null, quantity - 1)} aria-label="تقليل الكمية" className="w-8 h-8 rounded-full bg-white text-[#E4002B] flex items-center justify-center shadow-sm"><Minus className="w-4 h-4" /></button>
-                <span aria-live="polite" className="min-w-5 text-center text-sm font-black text-gray-900">{quantity}</span>
-                <button type="button" onClick={() => onSetQuantity(null, quantity + 1)} aria-label="زيادة الكمية" className="w-8 h-8 rounded-full bg-[#E4002B] text-white flex items-center justify-center shadow-sm"><Plus className="w-4 h-4" /></button>
-              </div>
-            ) : (
-              <button onClick={handleAdd} disabled={!available} className="w-9 h-9 rounded-full bg-[#E4002B] hover:bg-[#C8102E] disabled:bg-gray-300 disabled:shadow-none text-white flex items-center justify-center shadow-md active:scale-90 transition-all" aria-label={`أضف ${item.title} للسلة`} title={available ? `أضف ${item.title} للسلة` : "السعر غير محدد أو الصنف غير متاح"}>
-                <Plus className="w-4 h-4 stroke-[2.5]" />
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+      <MenuCardImage
+        item={item}
+        source={getItemImage(item)}
+        imageError={imageError}
+        onImageError={() => setImageError(true)}
+        isFavorite={isFavorite}
+        onToggleFavorite={onToggleFavorite}
+      />
+      <MenuCardDetails item={item} />
+      <CardPurchaseArea
+        item={item}
+        hasSizes={hasSizes}
+        selectedSize={selectedSize}
+        onSelectSize={setSelectedSize}
+        price={price}
+        quantity={quantity}
+        available={available}
+        onAdd={() => onAdd(item.id, hasSizes ? selectedSize : null)}
+        onSetQuantity={(nextQuantity) => onSetQuantity(hasSizes ? selectedSize : null, nextQuantity)}
+      />
     </article>
   );
 }
