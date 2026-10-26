@@ -129,7 +129,7 @@ export default function Header({ searchQuery, onSearchChange, restaurantInfo = R
       </div>
 
       {/* ─── 3. Hero Banner Card with Syrian Shawarma & Meals Feast Background ─── */}
-      <div className="relative rounded-3xl overflow-hidden shadow-xl min-h-[185px] sm:min-h-[205px] flex flex-col justify-between p-4 sm:p-5 mb-3 text-white border border-black/10">
+      <div className="relative rounded-3xl overflow-hidden shadow-lg min-h-[160px] sm:min-h-[190px] flex flex-col justify-between p-3.5 sm:p-5 mb-3 text-white border border-black/10">
         {/* Real Syrian Feast Background (Shawarma Sandwiches, Fatta, Fries, Toum - No Kofta) */}
         <img
           src="/syrian-hero-bg.jpg"
@@ -144,19 +144,19 @@ export default function Header({ searchQuery, onSearchChange, restaurantInfo = R
         <div className="absolute inset-0 bg-[#7A0210]/15 mix-blend-multiply" />
 
         <div className="relative z-10 max-w-[310px] sm:max-w-sm">
-          <span className="inline-block text-[10px] font-black tracking-wider bg-[#E4002B] text-white px-2.5 py-0.5 rounded-full mb-1.5 uppercase shadow-sm">
+          <span className="inline-block text-[9px] font-black tracking-wider bg-[#E4002B] text-white px-2.5 py-0.5 rounded-full mb-1 uppercase shadow-sm">
             {restaurantInfo.tagline}
           </span>
-          <h2 className="text-xl sm:text-2xl font-black leading-tight mb-1 text-white drop-shadow-md">
+          <h2 className="text-xl sm:text-2xl font-black leading-tight mb-0.5 text-white drop-shadow-md">
             طعم سوري أصيل.
           </h2>
-          <p className="text-[11px] sm:text-xs text-white/95 font-semibold mb-3.5 leading-relaxed drop-shadow-sm">
+          <p className="text-[10px] sm:text-xs text-white/95 font-semibold mb-2.5 leading-relaxed drop-shadow-sm">
             أشهى شاورما لحمة وفراخ، فتات، كريب، وجبات غربي، و بيتزا طازجة فورية.
           </p>
 
           <button
             onClick={handleOrderClick}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#E4002B] hover:bg-[#C8102E] text-white text-xs font-black shadow-lg shadow-black/40 active:scale-95 transition-all"
+            className="inline-flex min-h-10 items-center gap-1.5 px-4 rounded-full bg-[#E4002B] hover:bg-[#C8102E] text-white text-xs font-black shadow-lg shadow-black/40 active:scale-95 transition-all"
           >
             <span>{itemCount > 0 ? "استكمال الطلب" : "اطلب الآن"}</span>
             <ArrowLeft className="w-3.5 h-3.5" />

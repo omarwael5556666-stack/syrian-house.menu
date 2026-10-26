@@ -34,7 +34,6 @@ const SHORT_NAMES = {
 };
 
 export default function CategoryTabs({ categories, activeCategory, onCategoryChange }) {
-  const scrollRef = useRef(null);
   const activeBtnRef = useRef(null);
 
   useEffect(() => {
@@ -42,8 +41,16 @@ export default function CategoryTabs({ categories, activeCategory, onCategoryCha
   }, [activeCategory]);
 
   return (
-    <div id="menu-categories" className="mb-6 pt-1">
-      <div ref={scrollRef} className="flex items-start gap-4 overflow-x-auto no-scrollbar py-2 px-1 scroll-smooth" role="tablist" aria-label="أقسام قائمة الطعام">
+    <nav
+      id="menu-categories"
+      aria-label="أقسام قائمة الطعام"
+      className="sticky top-0 z-30 -mx-4 mb-4 border-b border-[#eadfdb] bg-[#FAF7F2]/95 px-4 py-2 backdrop-blur-md"
+    >
+      <div
+        className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth"
+        role="tablist"
+        aria-label="اختار قسمك بسرعة"
+      >
         {["الكل", ...categories].map((category) => {
           const isActive = activeCategory === category;
           const Icon = CATEGORY_ICONS[category] || CircleEllipsis;
@@ -51,21 +58,23 @@ export default function CategoryTabs({ categories, activeCategory, onCategoryCha
             <button
               key={category}
               ref={isActive ? activeBtnRef : null}
+              type="button"
               role="tab"
               aria-selected={isActive}
               onClick={() => onCategoryChange(category)}
-              className="flex flex-col items-center gap-1.5 shrink-0 group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E4002B]"
+              className={`min-h-10 shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 text-xs transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E4002B] ${
+                isActive
+                  ? "bg-[#E4002B] text-white font-black shadow-sm shadow-red-900/15"
+                  : "bg-white text-gray-700 border border-gray-200 font-bold hover:border-[#E4002B]/30 hover:text-[#9A031E]"
+              }`}
+              title={category}
             >
-              <span className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200 bg-white ${isActive ? "ring-2 ring-[#E4002B] ring-offset-2 scale-105 shadow-md shadow-red-500/10" : "border border-gray-200 group-hover:border-gray-300 group-hover:scale-105"}`}>
-                <Icon className={`w-7 h-7 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-[#E4002B]" : "text-gray-600"}`} strokeWidth={1.8} aria-hidden="true" />
-              </span>
-              <span className={`text-[11px] max-w-[78px] text-center leading-tight truncate ${isActive ? "text-[#E4002B] font-black" : "text-gray-700 font-semibold"}`} title={category}>
-                {SHORT_NAMES[category] || category}
-              </span>
+              <Icon className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
+              <span>{SHORT_NAMES[category] || category}</span>
             </button>
           );
         })}
       </div>
-    </div>
+    </nav>
   );
 }
