@@ -24,6 +24,12 @@ function normalizeItemCategory(category, title = "") {
   return title.includes("فتة") || title.includes("فته") ? FATTA_CATEGORY : ARABIC_CATEGORY;
 }
 
+function normalizeSandwichTitle(category, title = "") {
+  const normalizedTitle = title.trim();
+  if (category !== SANDWICH_CATEGORY || !normalizedTitle.startsWith("شاورما")) return normalizedTitle;
+  return `ساندوتش ${normalizedTitle}`;
+}
+
 function normalizeCategoryList(names = []) {
   const expanded = names.flatMap((name) =>
     name === LEGACY_COMBINED_CATEGORY ? [FATTA_CATEGORY, ARABIC_CATEGORY] : [name]
@@ -40,10 +46,14 @@ function normalizeSnapshot(snapshot) {
   return {
     ...snapshot,
     categories: normalizeCategoryList(snapshot.categories),
-    items: snapshot.items.map((item) => ({
-      ...item,
-      category: normalizeItemCategory(item.category, item.title),
-    })),
+    items: snapshot.items.map((item) => {
+      const category = normalizeItemCategory(item.category, item.title);
+      return {
+        ...item,
+        category,
+        title: normalizeSandwichTitle(category, item.title),
+      };
+    }),
   };
 }
 
@@ -62,10 +72,11 @@ export function applyMenu({ categories, items }) {
 }
 
 export function rowToItem(r) {
+  const category = normalizeItemCategory(r.categories?.name ?? "", r.title);
   return {
     id: r.id,
-    category: normalizeItemCategory(r.categories?.name ?? "", r.title),
-    title: r.title,
+    category,
+    title: normalizeSandwichTitle(category, r.title ?? ""),
     description: r.description ?? "",
     price: r.price != null ? Number(r.price) : null,
     priceM: r.price_m != null ? Number(r.price_m) : null,

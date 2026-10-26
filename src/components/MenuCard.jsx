@@ -12,6 +12,25 @@ import {
   Carrot,
   Utensils,
 } from "lucide-react";
+import { getProductPhoto } from "../data/productImages";
+
+const LEGACY_MENU_PHOTOS = new Set([
+  "food-shawarma-chicken.jpg",
+  "food-shawarma-beef.jpg",
+  "food-pizza.jpg",
+  "food-pasta.jpg",
+  "food-fatta.jpg",
+  "food-crispy.jpg",
+  "food-crepe.jpg",
+  "food-chicken.jpg",
+  "food-arabic.jpg",
+  "shawarma-skewer.jpg",
+]);
+
+function isLegacyMenuPhoto(url) {
+  const filename = url.split(/[?#]/, 1)[0].split("/").pop();
+  return LEGACY_MENU_PHOTOS.has(filename);
+}
 
 function getItemVisual(item) {
   const title = (item.title || "").toLowerCase();
@@ -42,7 +61,7 @@ function getItemVisual(item) {
   return { Icon: Utensils, label: item.category || "من مطبخنا" };
 }
 
-function MenuCardImage({ item, source, imageError, onImageError, isFavorite, onToggleFavorite }) {
+function MenuCardImage({ item, source, referenceImage, imageError, onImageError, isFavorite, onToggleFavorite }) {
   const { Icon, label } = getItemVisual(item);
 
   return (
@@ -67,6 +86,12 @@ function MenuCardImage({ item, source, imageError, onImageError, isFavorite, onT
             صورة توضيحية
           </span>
         </div>
+      )}
+
+      {source && !imageError && referenceImage && (
+        <span className="absolute bottom-2 right-2 rounded-full border border-white/20 bg-black/55 px-2 py-1 text-[8px] font-bold text-white/90 backdrop-blur-sm">
+          صورة استرشادية
+        </span>
       )}
 
       <button
@@ -223,13 +248,18 @@ function MenuCard({ item, onAdd, isFavorite, onToggleFavorite, quantityForSize, 
   const price = hasSizes ? (selectedSize === "M" ? item.priceM : item.priceL) : item.price;
   const quantity = quantityForSize?.(hasSizes ? selectedSize : null) || 0;
   const available = canOrder && item.isAvailable !== false && Number.isFinite(price) && price >= 0;
-  const imageSource = typeof item.imageUrl === "string" ? item.imageUrl.trim() : "";
+  const customImage = typeof item.imageUrl === "string" ? item.imageUrl.trim() : "";
+  const referencePhoto = getProductPhoto(item);
+  const legacyImage = customImage && isLegacyMenuPhoto(customImage);
+  const referenceImage = (!customImage || legacyImage) && Boolean(referencePhoto);
+  const imageSource = customImage && !legacyImage ? customImage : referencePhoto || customImage || "";
 
   return (
     <article className="bg-white rounded-2xl p-2.5 sm:p-3 shadow-xs border border-gray-100/90 flex flex-col justify-between hover:shadow-md transition-all duration-200 relative group">
       <MenuCardImage
         item={item}
         source={imageSource}
+        referenceImage={referenceImage}
         imageError={imageError}
         onImageError={() => setImageError(true)}
         isFavorite={isFavorite}
