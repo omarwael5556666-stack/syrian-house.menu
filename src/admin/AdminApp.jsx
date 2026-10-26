@@ -60,6 +60,24 @@ function Shell({ children }) {
 
 /* ─── Login ───────────────────────────────────────── */
 
+function getSignInErrorMessage(error) {
+  const code = String(error?.code ?? "").toLowerCase();
+
+  if (error?.status === 429 || code.includes("rate_limit") || code.includes("over_request")) {
+    return "حصلت محاولات دخول كثيرة. انتظر بضع دقائق ثم حاول مرة أخرى.";
+  }
+
+  if (error?.status === 400 || error?.status === 401 || code === "invalid_credentials") {
+    return "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+  }
+
+  if (error?.status >= 500) {
+    return "خدمة تسجيل الدخول تواجه مشكلة مؤقتة. حاول مرة أخرى بعد قليل.";
+  }
+
+  return "تعذر تسجيل الدخول إلى Supabase. تحقق من الاتصال وإعدادات المشروع ثم حاول مرة أخرى.";
+}
+
 function LoginScreen() {
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
@@ -73,7 +91,7 @@ function LoginScreen() {
     setError("");
     try {
       const err = await signIn(email.trim(), password);
-      if (err) setError("بيانات الدخول غير صحيحة");
+      if (err) setError(getSignInErrorMessage(err));
     } catch {
       setError("تعذر الاتصال بخدمة الدخول. تحقق من الاتصال وحاول مرة أخرى.");
     } finally {
