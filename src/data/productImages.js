@@ -6,7 +6,6 @@ const photos = {
   shawarmaPocket: photo("shawarma-pocket"),
   shawarmaWeightChicken: photo("shawarma-weight-chicken"),
   shawarmaRiceChicken: photo("shawarma-rice-chicken"),
-  shawarmaBeefReference: photo("shawarma-beef-reference"),
   shawarmaRiceMix: photo("shawarma-rice-mix"),
   arabicShawarma: photo("shawarma-arabic"),
   crepeTriangle: photo("crepe-triangle"),
@@ -71,7 +70,7 @@ export function getProductPhoto(item) {
 
   if (category.includes("فتات الشاورما") || title.includes("فتة") || title.includes("فته")) {
     if (title.includes("ميكس") || title.includes("مشكل")) return photos.shawarmaRiceMix;
-    if (includesAny(title, MEAT_WORDS)) return photos.shawarmaBeefReference;
+    if (includesAny(title, MEAT_WORDS)) return null;
     return photos.shawarmaRiceChicken;
   }
 

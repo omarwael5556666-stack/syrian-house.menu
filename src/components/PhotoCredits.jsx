@@ -9,13 +9,6 @@ const credits = [
     licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
   },
   {
-    subject: "شاورما اللحم",
-    photographer: "Hill93",
-    imageUrl: "https://commons.wikimedia.org/wiki/File:Beef_Shawarma.jpg",
-    license: "CC BY-SA 4.0",
-    licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
-  },
-  {
     subject: "شاورما ميكس مع الأرز",
     photographer: "secretlondon123",
     imageUrl: "https://commons.wikimedia.org/wiki/File:Mixed_Shawarma_(2843435528).jpg",
@@ -47,7 +40,7 @@ export default function PhotoCredits() {
         <ChevronDown className="h-4 w-4 shrink-0 text-[#8A6E5C] transition-transform group-open:rotate-180" aria-hidden="true" />
       </summary>
       <p className="mt-2 text-[11px] leading-5 text-[#75665C]">
-        الصور للتوضيح وليست صور أطباق مطعم البيت السوري. لكل صورة رابط المصدر والترخيص.
+        الصور للتوضيح وليست صور أطباق مطعم البيت السوري. لم نعرض صورة لفتة اللحمة لعدم توفر صورة مرخّصة مطابقة لطبق الرز والشاورما.
       </p>
       <ul className="mt-2 divide-y divide-[#EEE7DE]">
         {credits.map((credit) => (

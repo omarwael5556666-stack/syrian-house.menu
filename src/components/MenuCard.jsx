@@ -61,7 +61,7 @@ function getItemVisual(item) {
   return { Icon: Utensils, label: item.category || "من مطبخنا" };
 }
 
-function MenuCardImage({ item, source, referenceImage, imageError, onImageError, isFavorite, onToggleFavorite }) {
+function MenuCardImage({ item, source, referenceImage, emptyLabel, imageError, onImageError, isFavorite, onToggleFavorite }) {
   const { Icon, label } = getItemVisual(item);
 
   return (
@@ -79,7 +79,7 @@ function MenuCardImage({ item, source, referenceImage, imageError, onImageError,
           <div className="relative z-10 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/80 border border-[#E7DED2] flex items-center justify-center">
             <Icon className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.6} aria-hidden="true" />
           </div>
-          <span className="relative z-10 text-[10px] sm:text-[11px] font-bold tracking-wide">{label}</span>
+          <span className="relative z-10 text-[10px] sm:text-[11px] font-bold tracking-wide">{emptyLabel || label}</span>
         </div>
       )}
 
@@ -248,6 +248,7 @@ function MenuCard({ item, onAdd, isFavorite, onToggleFavorite, quantityForSize, 
   const title = (item.title || "").toLowerCase();
   const category = (item.category || "").toLowerCase();
   const isFatta = category.includes("فتات الشاورما") || title.includes("فتة") || title.includes("فته");
+  const isBeefFatta = isFatta && ["لحمة", "لحمه", "لحم", "لحوم"].some((word) => title.includes(word));
   const isRequestedReference = Boolean(referencePhoto) && (
     category.includes("الكريبات") ||
     isFatta ||
@@ -255,8 +256,10 @@ function MenuCard({ item, onAdd, isFavorite, onToggleFavorite, quantityForSize, 
   );
   const legacyImage = customImage && isLegacyMenuPhoto(customImage);
   const referenceImage = isRequestedReference || ((!customImage || legacyImage) && Boolean(referencePhoto));
-  const imageSource = isRequestedReference
-    ? referencePhoto
+  const imageSource = isBeefFatta
+    ? ""
+    : isRequestedReference
+      ? referencePhoto
     : customImage && !legacyImage
       ? customImage
       : referencePhoto || customImage || "";
@@ -267,6 +270,7 @@ function MenuCard({ item, onAdd, isFavorite, onToggleFavorite, quantityForSize, 
         item={item}
         source={imageSource}
         referenceImage={referenceImage}
+        emptyLabel={isBeefFatta ? "صورة الطبق قريبًا" : undefined}
         imageError={imageError}
         onImageError={() => setImageError(true)}
         isFavorite={isFavorite}
