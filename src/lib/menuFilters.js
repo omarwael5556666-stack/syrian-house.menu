@@ -35,11 +35,11 @@ export function groupMenuItems(items, categories) {
   });
 }
 
-export function getMenuSubtitle({ searchQuery, itemCount, settingsReady, isOpen, settings }) {
+export function getMenuSubtitle({ searchQuery, settingsReady, isOpen, settings }) {
   if (searchQuery) return `نتائج البحث عن "${searchQuery}"`;
-  if (!settingsReady) return `${itemCount} صنف · جارٍ تحميل إعدادات المطعم…`;
-  if (!isOpen) return `${itemCount} صنف · الطلبات مغلقة الآن`;
-  return `${itemCount} صنف · التوصيل خلال ${settings.eta_minutes} دقيقة تقريبًا · الحد الأدنى ${formatMoney(settings.minimum_order)} ج.م`;
+  if (!settingsReady) return "جاري تجهيز القائمة";
+  if (!isOpen) return "المطعم لا يستقبل الطلبات حاليًا";
+  return `التوصيل خلال ${settings.eta_minutes} دقيقة تقريبًا · الحد الأدنى ${formatMoney(settings.minimum_order)} ج.م`;
 }
 
 export function getEmptyStateQuery({ favoritesOnly, searchQuery, activeCategory }) {

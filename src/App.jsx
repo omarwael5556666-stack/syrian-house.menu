@@ -10,7 +10,6 @@ import DeliverySearch from "./components/DeliverySearch";
 import useRestaurantSettings from "./hooks/useRestaurantSettings";
 import { filterMenuItems, groupMenuItems } from "./lib/menuFilters";
 import { ClosedNotice, MenuHeading, MenuResults, RestaurantContact } from "./components/MenuSections";
-import PhotoCredits from "./components/PhotoCredits";
 
 function readFavorites() {
   try {
@@ -131,7 +130,6 @@ export default function App() {
 
         {/* ─── Contact & Info Section ────────────────── */}
         <RestaurantContact restaurantInfo={restaurantInfo} />
-        <PhotoCredits />
       </main>
 
       {/* ─── Bottom Navigation Bar (5 Tabs) ───────── */}

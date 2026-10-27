@@ -17,30 +17,35 @@ export function MenuHeading({
   const title = favoritesOnly ? "أصنافي المفضلة" : activeCategory === "الكل" ? "قائمة الطعام" : activeCategory;
 
   return (
-    <div className="flex items-center justify-between gap-3 mb-3 mt-1">
-      <div className="min-w-0">
-        <h2 className="text-base sm:text-lg font-black text-gray-900 tracking-tight">{title}</h2>
-        <p className="text-[11px] text-gray-600 font-semibold">
-          {getMenuSubtitle({ searchQuery, itemCount, settingsReady, isOpen, settings })}
+    <div className="menu-heading">
+      <div className="menu-heading-copy">
+        <span className="menu-heading-kicker">من مطبخ البيت السوري</span>
+        <h2 className="menu-heading-title">{title}</h2>
+        <p className="menu-heading-subtitle">
+          {getMenuSubtitle({ searchQuery, settingsReady, isOpen, settings })}
         </p>
       </div>
 
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="menu-heading-actions">
+        <div className="menu-heading-count" aria-label={`${itemCount} صنف`}>
+          <span className="menu-heading-count-number">{itemCount}</span>
+          <span className="menu-heading-count-label">صنف</span>
+        </div>
         <button
           type="button"
           onClick={onToggleFavorites}
           aria-pressed={favoritesOnly}
-          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-colors ${favoritesOnly ? "bg-brand-50 border-brand-200 text-[#8C2334]" : "bg-white border-gray-200 text-[#51423F]"}`}
+          className={`menu-favorites-button ${favoritesOnly ? "is-active" : ""}`}
         >
           <Heart className={`w-4 h-4 ${favoritesOnly ? "fill-current" : ""}`} />
-          المفضلة{favoritesOnly ? " ✓" : ""}
+          <span>المفضلة</span>
         </button>
 
         {activeCategory !== "الكل" && (
           <button
             type="button"
             onClick={onShowAll}
-            className="text-xs font-bold text-[#8C2334] hover:underline flex items-center gap-0.5"
+            className="menu-show-all-button"
           >
             <span>عرض الكل</span>
             <ChevronLeft className="w-4 h-4" />
@@ -115,14 +120,17 @@ function MenuCategorySection({
   return (
     <section>
       {showHeading && (
-        <div className="flex items-center justify-between gap-3 mb-2.5 pt-1">
-          <h3 className="text-sm font-black text-gray-800">{category}</h3>
-          <span className="text-[10px] font-bold text-[#48533B] bg-[#F0F1EA] px-2 py-0.5 rounded-full border border-[#E1E4D9]">
+        <div className="menu-category-heading">
+          <div className="menu-category-title-wrap">
+            <span className="menu-category-mark" aria-hidden="true" />
+            <h3 className="menu-category-title">{category}</h3>
+          </div>
+          <span className="menu-category-count">
             {items.length} صنف
           </span>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
+      <div className="menu-item-list" role="list">
         {items.map((item) => (
           <MenuCard
             key={item.id}

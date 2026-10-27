@@ -12,7 +12,7 @@ import menuData, { CATEGORIES } from "../data/menuData";
  * 3. If the DB is not configured or unreachable, static data stays.
  */
 
-const CACHE_KEY = "sh_menu_cache_v2";
+const CACHE_KEY = "sh_menu_cache_v3";
 const LEGACY_COMBINED_CATEGORY = "أطباق العربي وفتات الشاورما";
 const FATTA_CATEGORY = "فتات الشاورما";
 const ARABIC_CATEGORY = "أطباق العربي";
@@ -93,7 +93,6 @@ export function rowToItem(r) {
     price: r.price != null ? Number(r.price) : null,
     priceM: r.price_m != null ? Number(r.price_m) : null,
     priceL: r.price_l != null ? Number(r.price_l) : null,
-    imageUrl: r.image_url ?? "",
     isNew: Boolean(r.is_new),
     isAvailable: Boolean(r.is_available),
   };
@@ -125,7 +124,7 @@ export default function useMenuData() {
           supabase.from("categories").select("*").order("sort_order").order("name"),
           supabase
             .from("menu_items")
-            .select("*, categories(name)")
+            .select("id, title, description, price, price_m, price_l, is_new, is_available, categories(name)")
             .order("sort_order")
             .order("title"),
         ]);
@@ -162,7 +161,6 @@ function toPublicItem(it) {
     priceM: it.priceM ?? null,
     priceL: it.priceL ?? null,
     isNew: Boolean(it.isNew),
-    imageUrl: it.imageUrl ?? "",
     isAvailable: it.isAvailable ?? (it.price != null || (it.priceM != null && it.priceL != null)),
   };
 }
