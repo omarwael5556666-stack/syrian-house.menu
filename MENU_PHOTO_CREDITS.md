@@ -48,6 +48,10 @@ Unsplash's standard license permits commercial and non-commercial use: <https://
 | `zinger-flatbread.jpg` | Crispy chicken on flatbread (illustrative reference for the Syrian bread zinger sandwich) | Mohamad Sadek | <https://www.pexels.com/photo/cloe-up-photo-of-crisp-chicken-on-bread-served-on-wooden-tray-10361459/> |
 | `tawook-pita-wrap.jpg` | Chicken kebab wraps in flatbread (illustrative reference for the Syrian bread shish tawook sandwich) | Mustafa Erdağ | <https://www.pexels.com/photo/close-up-of-turkish-kebabs-lying-among-raw-ingredients-15390220/> |
 | `crepe-triangle.jpg` | Folded triangular savory crepe | Luis Becerra Fotógrafo | <https://www.pexels.com/photo/food-on-plate-15671379/> |
-| `shawarma-rice-chicken.jpg` | Chicken shawarma-style platter with rice | Dee Dave | <https://www.pexels.com/photo/indian-meal-with-rice-and-curry-8018000/> |
-| `shawarma-rice-beef.jpg` | Spiced beef with rice (illustrative beef fata reference) | Dee Dave | <https://www.pexels.com/photo/rice-and-meat-on-plate-on-table-21385827/> |
-| `shawarma-rice-mix.jpg` | Middle Eastern rice platter with mixed grilled meats (illustrative mixed fata reference) | Mary Ghanati | <https://www.pexels.com/photo/traditional-middle-eastern-platter-with-rice-and-grilled-meats-35536407/> |
+| `shawarma-rice-chicken.jpg` | Chicken shawarma with rice, garlic sauce and salad (illustrative reference) | User:CrunchySkies | <https://commons.wikimedia.org/wiki/File:Chicken_Shwarama_plate.jpeg> |
+| `shawarma-beef-reference.jpg` | Beef shawarma in pita (protein reference for beef fatta; rice is not shown) | Hill93 | <https://commons.wikimedia.org/wiki/File:Beef_Shawarma.jpg> |
+| `shawarma-rice-mix.jpg` | Mixed chicken and beef shawarma with rice, pita and salad (illustrative reference) | secretlondon123 | <https://commons.wikimedia.org/wiki/File:Mixed_Shawarma_(2843435528).jpg> |
+
+The Wikimedia Commons photos above are reproduced under their source licenses and have not been edited: chicken shawarma rice is licensed [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) and attributed to User:CrunchySkies; beef shawarma is licensed [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) and attributed to Hill93; mixed shawarma is licensed [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) and attributed to secretlondon123. Each source page contains the full attribution and license details. The beef photo shows the correct shawarma protein but not the restaurant's rice-based fata plating, so it remains labeled as an illustrative photo in the menu.
+
+These three attributions and direct source/license links are also available in the menu's "مصادر صور الشاورما التوضيحية" disclosure at the bottom of the page.
