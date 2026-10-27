@@ -93,7 +93,11 @@ export default function App() {
         <CategoryTabs
           categories={categories}
           activeCategory={activeCategory}
-          onCategoryChange={(category) => { setActiveCategory(category); setActiveTab("menu"); }}
+          onCategoryChange={(category) => {
+            if (category !== activeCategory) setFavoritesOnly(false);
+            setActiveCategory(category);
+            setActiveTab("menu");
+          }}
         />
 
         <MenuHeading
@@ -105,7 +109,10 @@ export default function App() {
           isOpen={isOpen}
           settings={settings}
           onToggleFavorites={() => setFavoritesOnly((value) => !value)}
-          onShowAll={() => setActiveCategory("الكل")}
+          onShowAll={() => {
+            setFavoritesOnly(false);
+            setActiveCategory("الكل");
+          }}
         />
 
         {settingsReady && !isOpen && <ClosedNotice settings={settings} />}
