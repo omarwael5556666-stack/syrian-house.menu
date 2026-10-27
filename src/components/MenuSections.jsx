@@ -30,7 +30,7 @@ export function MenuHeading({
           type="button"
           onClick={onToggleFavorites}
           aria-pressed={favoritesOnly}
-          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-colors ${favoritesOnly ? "bg-red-50 border-red-200 text-[#E4002B]" : "bg-white border-gray-200 text-[#51423F]"}`}
+          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-colors ${favoritesOnly ? "bg-brand-50 border-brand-200 text-[#8C2334]" : "bg-white border-gray-200 text-[#51423F]"}`}
         >
           <Heart className={`w-4 h-4 ${favoritesOnly ? "fill-current" : ""}`} />
           المفضلة{favoritesOnly ? " ✓" : ""}
@@ -40,7 +40,7 @@ export function MenuHeading({
           <button
             type="button"
             onClick={onShowAll}
-            className="text-xs font-bold text-[#E4002B] hover:underline flex items-center gap-0.5"
+            className="text-xs font-bold text-[#8C2334] hover:underline flex items-center gap-0.5"
           >
             <span>عرض الكل</span>
             <ChevronLeft className="w-4 h-4" />
@@ -117,7 +117,7 @@ function MenuCategorySection({
       {showHeading && (
         <div className="flex items-center justify-between gap-3 mb-2.5 pt-1">
           <h3 className="text-sm font-black text-gray-800">{category}</h3>
-          <span className="text-[10px] font-bold text-gray-400 bg-white px-2 py-0.5 rounded-full border border-gray-100">
+          <span className="text-[10px] font-bold text-[#48533B] bg-[#F0F1EA] px-2 py-0.5 rounded-full border border-[#E1E4D9]">
             {items.length} صنف
           </span>
         </div>
@@ -146,15 +146,15 @@ export function RestaurantContact({ restaurantInfo }) {
       <h3 className="text-base sm:text-lg font-black text-gray-900 mb-1 leading-normal py-0.5">
         {restaurantInfo.restaurant_name}
       </h3>
-      <p className="text-xs font-bold text-[#E4002B] mb-2">{restaurantInfo.tagline}</p>
+      <p className="text-xs font-bold text-[#8C2334] mb-2">{restaurantInfo.tagline}</p>
       <p className="text-xs text-gray-500 mb-4 flex items-center justify-center gap-1">
-        <MapPin className="w-3.5 h-3.5 text-[#E4002B] shrink-0" />
+        <MapPin className="w-3.5 h-3.5 text-[#8C2334] shrink-0" />
         <span>{restaurantInfo.address}</span>
       </p>
 
       <div className="border-t border-gray-100 pt-3">
         <h4 className="text-xs font-black text-gray-700 mb-2.5 flex items-center justify-center gap-1.5">
-          <Phone className="w-3.5 h-3.5 text-[#E4002B]" />
+          <Phone className="w-3.5 h-3.5 text-[#8C2334]" />
           <span>أرقام خدمة توصيل الطلبات (اضغط للاتصال):</span>
         </h4>
         <div className="grid grid-cols-2 gap-2" dir="ltr">
@@ -162,7 +162,7 @@ export function RestaurantContact({ restaurantInfo }) {
             <a
               key={contact.number}
               href={`tel:${contact.raw}`}
-              className="p-2 rounded-xl bg-gray-50 hover:bg-[#FFF0F2] border border-gray-100 hover:border-red-200 text-gray-800 hover:text-[#E4002B] text-xs font-bold flex flex-col items-center justify-center transition-all"
+              className="p-2 rounded-xl bg-gray-50 hover:bg-[#FAF2F1] border border-gray-100 hover:border-brand-200 text-gray-800 hover:text-[#8C2334] text-xs font-bold flex flex-col items-center justify-center transition-colors duration-150"
             >
               <span className="text-[10px] text-gray-400">{contact.label}</span>
               <span className="tracking-wide">{contact.number}</span>
@@ -176,7 +176,7 @@ export function RestaurantContact({ restaurantInfo }) {
           {restaurantInfo.restaurant_name} — {restaurantInfo.tagline}
         </p>
         <p className="text-[11px] text-gray-600 font-semibold">
-          صفحة الفيسبوك: <span className="text-[#E4002B] font-bold">{restaurantInfo.facebook_page}</span>
+          صفحة الفيسبوك: <span className="text-[#8C2334] font-bold">{restaurantInfo.facebook_page}</span>
         </p>
         <p className="text-[10px] sm:text-[11px] font-medium text-gray-500">
           جميع الحقوق محفوظة &copy; {new Date().getFullYear()} {restaurantInfo.restaurant_name}

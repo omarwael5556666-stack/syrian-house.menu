@@ -1,8 +1,8 @@
 # Menu photo credits
 
-These Unsplash photos are illustrative menu references, not photos of Syrian House's own plated dishes. Each product image uses the closest available food reference; restaurant photography should replace these references when it becomes available. All files are cropped/resized copies stored under `public/menu-photos/`.
+These Unsplash and Pexels photos are illustrative references, not photographs of Syrian House's own dishes. Product images are mapped by dish type and ingredients. Where the library has no close match, the menu uses a category illustration instead of showing a misleading food photo. Restaurant photography can replace these references when it becomes available. The local copies are stored under `public/menu-photos/`.
 
-Unsplash states that its standard-license images may be used for commercial and non-commercial projects. Attribution is not required, but is included here: <https://unsplash.com/license>.
+Unsplash's standard license permits commercial and non-commercial use: <https://unsplash.com/license>. Pexels marks the source photos below as free to use; its license is at <https://www.pexels.com/license/>. Photographer names and source links are included for attribution.
 
 | File | Subject | Photographer | Source |
 | --- | --- | --- | --- |
@@ -33,3 +33,15 @@ Unsplash states that its standard-license images may be used for commercial and 
 | `hummus-pita.jpg` | Hummus and pita | Imad 786 | <https://unsplash.com/photos/a-plate-of-hummus-pita-bread-and-a-bowl-of-hummus-eeDn5tqeWCc> |
 | `coleslaw.jpg` | Coleslaw | Some Tale | <https://unsplash.com/photos/a-white-bowl-filled-with-coleslaw-on-top-of-a-table-2c-7wjgc4fg> |
 | `rice.jpg` | Rice with vegetables | Kouji Tsuru | <https://unsplash.com/photos/steamed-rice-and-vegetables-on-plate-XVo7sJrQy0g> |
+| `shawarma-wraps.jpg` | Chicken shawarma wraps | rajdeepcraft | <https://www.pexels.com/photo/close-up-shot-of-shawarma-6416559/> |
+| `shawarma-pocket.jpg` | Chicken shawarma wrap in pita | Mohammad Fahim | <https://www.pexels.com/es-es/foto/deliciosos-wraps-de-shawarma-de-pollo-en-primer-plano-40262789/> |
+| `crispy-chicken-sandwich.jpg` | Crispy chicken sandwich | Erwin Quintana | <https://www.pexels.com/photo/close-up-photograph-of-a-burger-with-chicken-7962694/> |
+| `shawarma-weight-chicken.jpg` | Freshly sliced shawarma from the spit | RDNE Stock project | <https://www.pexels.com/photo/close-up-shot-of-shawarma-on-a-tray-5779368/> |
+| `shawarma-arabic.jpg` | Shawarma sandwiches with fries and sauces | Omar B Shokerat | <https://www.pexels.com/photo/shawarma-with-fries-18177329/> |
+| `shawarma-fatta.jpg` | Shawarma on pita with sauces | Studio D7 | <https://www.pexels.com/photo/middle-eastern-shawarma-on-plate-with-sauces-32845316/> |
+| `pasta-baked-reference.jpg` | Cheesy baked pasta | Shameel Mukkath | <https://images.pexels.com/photos/14930713/pexels-photo-14930713.jpeg> |
+| `pasta-white-sauce.jpg` | Creamy chicken pasta | Biel Heinrich | <https://images.pexels.com/photos/9760214/pexels-photo-9760214.jpeg> |
+| `toum.jpg` | Garlic white sauce | Demian Grygorchuk | <https://www.pexels.com/photo/a-flatlay-of-a-white-sauce-in-a-glass-bowl-8053728/> |
+| `rice-bowl.jpg` | Cooked white rice | Robert Moutongoh | <https://www.pexels.com/photo/a-bowl-of-cooked-rice-8923092/> |
+| `fries-bowl.jpg` | French fries in a white bowl | Engin Akyurt | <https://www.pexels.com/photo/french-fries-on-white-ceramic-bowl-8272622/> |
+| `grilled-chicken-rice.jpg` | Chicken mandi with basmati rice | aboodi vesakaran | <https://www.pexels.com/photo/food-photography-18698228/> |

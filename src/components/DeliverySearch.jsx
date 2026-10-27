@@ -41,7 +41,7 @@ export default function DeliverySearch() {
       {/* ─── Header ────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 text-gray-900 font-extrabold text-sm">
-          <Truck className="w-4 h-4 text-[#E4002B]" />
+          <Truck className="w-4 h-4 text-[#8C2334]" />
           <span>مناطق وأسعار التوصيل (قويسنا والقرى)</span>
         </div>
         <span className="text-[11px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
@@ -58,7 +58,7 @@ export default function DeliverySearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="ابحث عن قريتك أو منطقتك لمعرفة سعر التوصيل..."
-          className="w-full h-10 pr-9 pl-9 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-800 placeholder:text-gray-400 outline-none focus:border-[#E4002B] focus:bg-white transition-colors"
+          className="w-full h-10 pr-9 pl-9 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-800 placeholder:text-gray-400 outline-none focus:border-[#8C2334] focus:bg-white transition-colors"
           autoComplete="off"
         />
         {query && (
@@ -75,7 +75,7 @@ export default function DeliverySearch() {
       {/* ─── Location Grid ──────────────────────────────── */}
       {filtered.length === 0 ? (
         <div className="py-6 text-center">
-          <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-2 text-red-400">
+          <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center mx-auto mb-2 text-red-400">
             <MapPinOff className="w-5 h-5" />
           </div>
           <p className="text-xs font-bold text-gray-700">لا توجد نتائج</p>
@@ -94,10 +94,10 @@ export default function DeliverySearch() {
             {filtered.map((d) => (
               <div
                 key={d.location}
-                className="flex items-center justify-between p-2 rounded-xl bg-gray-50 border border-gray-100 hover:border-red-200 transition-colors"
+                className="flex items-center justify-between p-2 rounded-xl bg-gray-50 border border-gray-100 hover:border-brand-200 transition-colors"
               >
                 <span className="text-xs font-bold text-gray-800 truncate">{d.location}</span>
-                <span className="text-xs font-black text-[#E4002B] shrink-0 ms-1">
+                <span className="text-xs font-black text-[#8C2334] shrink-0 ms-1">
                   {formatMoney(d.fee)} ج.م
                 </span>
               </div>

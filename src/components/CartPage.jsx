@@ -158,7 +158,7 @@ export default function CartPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate("/")}
-              className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-700 hover:text-[#E4002B] hover:bg-gray-50 transition-colors"
+              className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-700 hover:text-[#8C2334] hover:bg-gray-50 transition-colors"
               aria-label="رجوع للمينيو"
             >
               <ArrowRight className="w-5 h-5" />
@@ -174,7 +174,7 @@ export default function CartPage() {
           {entries.length > 0 && (
             <button
               onClick={clear}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-[#E4002B] text-xs font-bold transition-all active:scale-95 border border-red-100 shadow-xs"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-[#8C2334] text-xs font-bold transition-all active:scale-95 border border-brand-100 shadow-xs"
               aria-label="إفراغ السلة بالكامل"
               title="إفراغ السلة"
             >
@@ -187,7 +187,7 @@ export default function CartPage() {
         {notice && <p role="status" className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold text-amber-900">{notice}</p>}
         {lines.live.length === 0 && lines.invalid.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4 text-[#E4002B]">
+            <div className="w-16 h-16 rounded-full bg-brand-50 flex items-center justify-center mx-auto mb-4 text-[#8C2334]">
               <ShoppingBag className="w-8 h-8" />
             </div>
             <h3 className="text-base font-black text-gray-900 mb-1">السلة فارغة</h3>
@@ -196,7 +196,7 @@ export default function CartPage() {
             </p>
             <button
               onClick={() => navigate("/")}
-              className="px-6 py-2.5 rounded-full bg-[#E4002B] hover:bg-[#C8102E] text-white font-black text-xs shadow-md transition-all active:scale-95"
+              className="px-6 py-2.5 rounded-full bg-[#8C2334] hover:bg-[#6E1B29] text-white font-black text-xs shadow-md transition-all active:scale-95"
             >
               تصفح قائمة الطعام
             </button>
@@ -204,7 +204,7 @@ export default function CartPage() {
         ) : (
           <>
             {lines.invalid.length > 0 && (
-              <div role="alert" className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4">
+              <div role="alert" className="mb-4 rounded-2xl border border-brand-200 bg-brand-50 p-4">
                 <p className="mb-2 text-sm font-black text-red-800">في السلة أصناف غير متاحة أو سعرها غير محدد</p>
                 <ul className="space-y-2">
                   {lines.invalid.map((line) => (
@@ -228,7 +228,7 @@ export default function CartPage() {
                       <h3 className="font-black text-gray-900 text-sm leading-snug">
                         {l.item.title}
                         {l.size && (
-                            <span className="ms-2 inline-block text-[11px] font-black bg-red-50 text-[#E4002B] px-2 py-0.5 rounded-md">
+                            <span className="ms-2 inline-block text-[11px] font-black bg-brand-50 text-[#8C2334] px-2 py-0.5 rounded-md">
                             {l.size === "M" ? "وسط" : "كبير"}
                           </span>
                         )}
@@ -239,7 +239,7 @@ export default function CartPage() {
                     <button
                       onClick={() => remove(l.key)}
                       aria-label={`إزالة ${l.item.title}`}
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-[#8F2433] hover:text-[#B42318] hover:bg-red-50 transition-colors shrink-0"
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-[#8F2433] hover:text-[#B42318] hover:bg-brand-50 transition-colors shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -253,7 +253,7 @@ export default function CartPage() {
                     >
                       <button
                         onClick={() => setQty(l.key, l.qty - 1)}
-                        className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-gray-800 hover:text-[#E4002B] shadow-xs active:scale-90 transition-all"
+                        className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-gray-800 hover:text-[#8C2334] shadow-xs active:scale-90 transition-all"
                       >
                         <Minus className="w-3.5 h-3.5" />
                       </button>
@@ -262,13 +262,13 @@ export default function CartPage() {
                       </span>
                       <button
                         onClick={() => setQty(l.key, l.qty + 1)}
-                        className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-gray-800 hover:text-[#E4002B] shadow-xs active:scale-90 transition-all"
+                        className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-gray-800 hover:text-[#8C2334] shadow-xs active:scale-90 transition-all"
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
-                    <span className="text-sm font-black text-[#E4002B] tabular-nums">
+                    <span className="text-sm font-black text-[#8C2334] tabular-nums">
                       {l.price * l.qty} ج.م
                     </span>
                   </div>
@@ -279,7 +279,7 @@ export default function CartPage() {
                     value={l.note}
                     onChange={(e) => setNote(l.key, e.target.value)}
                     placeholder="ملاحظات خاصة... مثال: زيادة تومية، بدون خيار"
-                    className="mt-2.5 w-full h-8 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-800 placeholder:text-gray-400 outline-none focus:border-[#E4002B] focus:bg-white transition-colors"
+                    className="mt-2.5 w-full h-8 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-800 placeholder:text-gray-400 outline-none focus:border-[#8C2334] focus:bg-white transition-colors"
                   />
                 </div>
               ))}
@@ -301,7 +301,7 @@ export default function CartPage() {
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="اكتب اسمك"
-                  className="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#E4002B] focus:bg-white"
+                  className="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#8C2334] focus:bg-white"
                 />
               </div>
 
@@ -320,12 +320,12 @@ export default function CartPage() {
                     placeholder="01xxxxxxxxx"
                     className={`w-full h-10 px-3 rounded-xl bg-gray-50 border text-xs text-gray-900 outline-none ${
                       phone && !phoneOk
-                        ? "border-red-400 bg-red-50/30"
-                        : "border-gray-200 focus:border-[#E4002B] focus:bg-white"
+                        ? "border-red-400 bg-brand-50/30"
+                        : "border-gray-200 focus:border-[#8C2334] focus:bg-white"
                     }`}
                   />
                   {phone && !phoneOk && (
-                    <p className="text-[10px] text-red-500 mt-1">
+                    <p className="text-[10px] text-red-600 mt-1">
                       أدخل رقم موبايل مصري صحيح يبدأ بـ 010 أو 011 أو 012 أو 015
                     </p>
                   )}
@@ -343,9 +343,9 @@ export default function CartPage() {
                     value={phone2}
                     onChange={(e) => setPhone2(e.target.value)}
                     placeholder="01xxxxxxxxx"
-                    className="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#E4002B] focus:bg-white"
+                    className="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#8C2334] focus:bg-white"
                   />
-                  {phone2 && !phone2Ok && <p className="text-[10px] text-red-500 mt-1">أدخل رقم موبايل مصري صحيح أو اترك الحقل فارغًا</p>}
+                  {phone2 && !phone2Ok && <p className="text-[10px] text-red-600 mt-1">أدخل رقم موبايل مصري صحيح أو اترك الحقل فارغًا</p>}
                 </div>
               </div>
 
@@ -357,7 +357,7 @@ export default function CartPage() {
                   id="cust-zone"
                   value={zoneName}
                   onChange={(e) => setZoneName(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#E4002B] focus:bg-white"
+                  className="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#8C2334] focus:bg-white"
                 >
                   <option value="">اختر منطقتك أو قريتك...</option>
                   {zones.map((z) => (
@@ -372,7 +372,7 @@ export default function CartPage() {
                 <div className="pt-1">
                   <label
                     htmlFor="cust-quesna-detail"
-                    className="flex items-center gap-1 text-[11px] font-bold text-[#E4002B] mb-1"
+                    className="flex items-center gap-1 text-[11px] font-bold text-[#8C2334] mb-1"
                   >
                     <MapPin className="w-3.5 h-3.5" />
                     <span>العنوان بالتفصيل في قويسنا *</span>
@@ -383,7 +383,7 @@ export default function CartPage() {
                     value={quesnaDetail}
                     onChange={(e) => setQuesnaDetail(e.target.value)}
                     placeholder="اسم الشارع، رقم العمارة، علامة مميزة..."
-                    className="w-full h-10 px-3 rounded-xl bg-white border border-[#E4002B]/40 text-xs text-gray-900 outline-none focus:border-[#E4002B]"
+                    className="w-full h-10 px-3 rounded-xl bg-white border border-[#8C2334]/40 text-xs text-gray-900 outline-none focus:border-[#8C2334]"
                   />
                 </div>
               )}
@@ -398,7 +398,7 @@ export default function CartPage() {
                   value={orderNote}
                   onChange={(e) => setOrderNote(e.target.value)}
                   placeholder="أي طلبات خاصة بطريقة التوصيل أو الاستلام..."
-                  className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#E4002B] focus:bg-white resize-none"
+                  className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 outline-none focus:border-[#8C2334] focus:bg-white resize-none"
                 />
               </div>
             </div>
@@ -415,7 +415,7 @@ export default function CartPage() {
                   {zone ? `${formatMoney(deliveryFee)} ج.م` : "اختر المنطقة"}
                 </span>
               </div>
-              <div className="flex justify-between font-black text-sm text-[#E4002B] pt-2 border-t border-gray-100">
+              <div className="flex justify-between font-black text-sm text-[#8C2334] pt-2 border-t border-gray-100">
                 <span>الإجمالي النهائي</span>
                 <span className="tabular-nums">
                   {zone ? `${formatMoney(total)} ج.م` : `${formatMoney(subtotal)} ج.م + التوصيل`}
@@ -427,7 +427,7 @@ export default function CartPage() {
             <button
               onClick={sendToWhatsapp}
               disabled={sending || !isOpen || !zone || lines.live.length === 0 || lines.invalid.length > 0 || !phoneOk || !phone2Ok || !quesnaOk || !minimumOk}
-              className="w-full h-13 py-3 rounded-2xl bg-[#E4002B] hover:bg-[#C8102E] disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-sm shadow-lg shadow-red-600/25 flex items-center justify-center gap-2 active:scale-[0.99] transition-all"
+              className="w-full h-13 py-3 rounded-2xl bg-[#8C2334] hover:bg-[#6E1B29] disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-sm shadow-lg shadow-brand-700/25 flex items-center justify-center gap-2 active:scale-[0.99] transition-all"
             >
               <Send className="w-4 h-4" />
               <span>{sending ? "جارٍ تجهيز الطلب…" : !isOpen ? "المطعم مغلق حاليًا" : `إرسال الطلب عبر واتساب (${zone ? `${formatMoney(total)} ج.م` : "تحديد البيانات"})`}</span>
@@ -438,7 +438,7 @@ export default function CartPage() {
                 يرجى إدخال رقم الموبايل لتفعيل زر إرسال الطلب
               </p>
             )}
-            {!phone2Ok && <p className="text-[11px] text-red-500 text-center mt-2">رقم الموبايل الإضافي غير صحيح</p>}
+            {!phone2Ok && <p className="text-[11px] text-red-600 text-center mt-2">رقم الموبايل الإضافي غير صحيح</p>}
             {!minimumOk && <p className="text-[11px] text-gray-500 text-center mt-2">الحد الأدنى للطلب {formatMoney(settings.minimum_order)} ج.م</p>}
             {!isOpen && <p className="text-[11px] text-gray-500 text-center mt-2">{settings.opening_time && settings.closing_time ? `مواعيد استقبال الطلبات ${String(settings.opening_time).slice(0, 5)}–${String(settings.closing_time).slice(0, 5)}` : "المطعم متوقف مؤقتًا عن استقبال الطلبات"}</p>}
             {phoneOk && !zone && (
@@ -449,7 +449,7 @@ export default function CartPage() {
 
             <button
               onClick={clear}
-              className="block mx-auto mt-4 text-[11px] font-bold text-gray-400 hover:text-red-500 transition-colors"
+              className="block mx-auto mt-4 text-[11px] font-bold text-gray-400 hover:text-brand-500 transition-colors"
             >
               تفريغ محتويات السلة
             </button>

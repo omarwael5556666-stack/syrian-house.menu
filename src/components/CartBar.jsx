@@ -27,7 +27,7 @@ export default function CartBar() {
       <button
         onClick={() => navigate("/cart")}
         aria-label={`فتح السلة، ${count} صنف، الإجمالي ${total} جنيه`}
-        className="pointer-events-auto w-full max-w-[560px] h-12 rounded-2xl bg-[#E4002B] hover:bg-[#C8102E] shadow-xl shadow-red-600/30 text-white font-black flex items-center justify-between px-4 transition-all duration-150 active:scale-[0.98]"
+        className="pointer-events-auto w-full max-w-[560px] h-12 rounded-2xl bg-[#8C2334] hover:bg-[#6E1B29] shadow-xl shadow-brand-700/25 text-white font-black flex items-center justify-between px-4 transition-all duration-150 active:scale-[0.98]"
       >
         {/* Count Badge + Total */}
         <div className="flex items-center gap-2.5">

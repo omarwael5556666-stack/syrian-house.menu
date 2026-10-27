@@ -44,7 +44,7 @@ export default function CategoryTabs({ categories, activeCategory, onCategoryCha
     <nav
       id="menu-categories"
       aria-label="أقسام قائمة الطعام"
-      className="sticky top-0 z-30 -mx-4 mb-4 border-b border-[#eadfdb] bg-[#FAF7F2]/95 px-4 py-2 backdrop-blur-md"
+      className="sticky top-0 z-30 -mx-4 mb-4 border-b border-[#E8DFD5] bg-[#FBF8F3]/95 px-4 py-2 backdrop-blur-md"
     >
       <div
         className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth"
@@ -62,10 +62,10 @@ export default function CategoryTabs({ categories, activeCategory, onCategoryCha
               role="tab"
               aria-selected={isActive}
               onClick={() => onCategoryChange(category)}
-              className={`min-h-10 shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 text-xs transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E4002B] ${
+              className={`min-h-10 shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 text-xs transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8C2334] ${
                 isActive
-                  ? "bg-[#E4002B] text-white font-black shadow-sm shadow-red-900/15"
-                  : "bg-white text-gray-700 border border-gray-200 font-bold hover:border-[#E4002B]/30 hover:text-[#9A031E]"
+                  ? "bg-[#8C2334] text-white font-black shadow-sm shadow-brand-900/15"
+                  : "bg-white text-[#51423F] border border-[#E8DFD5] font-bold hover:border-[#8C2334]/30 hover:text-[#6E1B29]"
               }`}
               title={category}
             >

@@ -86,7 +86,7 @@ export default function App() {
 
       {/* Main Scrollable Content */}
       <main className="flex-1 px-4 pt-2 pb-44 sm:pb-48">
-        {/* Top Bar + Search + Hero Banner (KFC Style Order) */}
+        {/* Brand bar, search, and food-first hero */}
         <Header searchQuery={searchQuery} onSearchChange={handleSearch} restaurantInfo={restaurantInfo} />
 
         {/* Category Tabs (Circular Icons Scroll) */}

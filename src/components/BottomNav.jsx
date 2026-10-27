@@ -69,7 +69,7 @@ export default function BottomNav({ activeTab = "home", onTabChange }) {
       >
         <ShoppingBag className="w-6 h-6 text-white" />
         {itemCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full bg-white text-[#E4002B] text-[11px] font-black flex items-center justify-center shadow-md">
+          <span className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full bg-white text-[#8C2334] text-[11px] font-black flex items-center justify-center shadow-md">
             {itemCount}
           </span>
         )}

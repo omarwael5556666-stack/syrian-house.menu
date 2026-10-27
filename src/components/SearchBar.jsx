@@ -31,7 +31,7 @@ export default function SearchBar({ query, onQueryChange, onFilterClick }) {
           </button>
         )}
 
-        {/* Filter Sliders Button (KFC Style) */}
+        {/* Filter shortcut */}
         <button
           onClick={() => {
             if (onFilterClick) {

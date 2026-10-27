@@ -53,7 +53,7 @@ export default function OrderTracking() {
 
   return (
     <div className="app-shell min-h-screen px-4 py-5">
-      <button onClick={() => navigate("/")} className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-gray-700 hover:text-[#E4002B]">
+      <button onClick={() => navigate("/")} className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-gray-700 hover:text-[#8C2334]">
         <ArrowRight className="w-4 h-4" /> العودة للقائمة
       </button>
       <main className="mx-auto max-w-xl">
@@ -62,17 +62,17 @@ export default function OrderTracking() {
         <form onSubmit={lookup} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
           <div>
             <label htmlFor="track-order-id" className="mb-1 block text-xs font-bold text-gray-700">رقم الطلب</label>
-            <input id="track-order-id" required dir="ltr" value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" className="h-11 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 text-sm outline-none focus:border-[#E4002B]" />
+            <input id="track-order-id" required dir="ltr" value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" className="h-11 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 text-sm outline-none focus:border-[#8C2334]" />
           </div>
           <div>
             <label htmlFor="track-phone" className="mb-1 block text-xs font-bold text-gray-700">رقم الموبايل</label>
-            <input id="track-phone" type="tel" inputMode="tel" dir="ltr" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01xxxxxxxxx" className="h-11 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 text-sm outline-none focus:border-[#E4002B]" />
+            <input id="track-phone" type="tel" inputMode="tel" dir="ltr" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01xxxxxxxxx" className="h-11 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 text-sm outline-none focus:border-[#8C2334]" />
           </div>
-          <button type="submit" disabled={loading} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#E4002B] text-sm font-black text-white disabled:opacity-60">
+          <button type="submit" disabled={loading} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#8C2334] text-sm font-black text-white disabled:opacity-60">
             <Search className="w-4 h-4" /> {loading ? "جارٍ البحث…" : "عرض حالة الطلب"}
           </button>
         </form>
-        {error && <p role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-800">{error}</p>}
+        {error && <p role="alert" className="mt-4 rounded-xl border border-brand-200 bg-brand-50 p-3 text-sm font-bold text-red-800">{error}</p>}
         {order && (
           <section role="status" className="mt-5 rounded-2xl border border-green-200 bg-green-50 p-5">
             <div className="flex items-center gap-3 text-green-900">

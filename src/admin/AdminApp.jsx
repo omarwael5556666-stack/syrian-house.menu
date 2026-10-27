@@ -887,7 +887,7 @@ function OrdersManager() {
         <div><h2 className="text-base font-extrabold">الطلبات الواردة</h2><p className="text-xs text-fg-muted mt-1">آخر 100 طلب محفوظ في النظام</p></div>
         <button onClick={load} disabled={loading} className="h-9 px-3 rounded-md border border-line text-sm font-bold disabled:opacity-50">تحديث</button>
       </div>
-      {error && <p role="alert" className="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-3">{error}</p>}
+      {error && <p role="alert" className="mb-4 text-sm text-red-700 bg-brand-50 border border-brand-200 rounded-md p-3">{error}</p>}
       {loading ? <p className="text-sm text-fg-muted">جارٍ تحميل الطلبات…</p> : rows.length === 0 ? <p className="p-8 rounded-lg bg-surface border border-line text-center text-sm text-fg-muted">لا توجد طلبات مسجلة حتى الآن.</p> : (
         <ul className="space-y-3">
           {rows.map((order) => (
@@ -1000,7 +1000,7 @@ function SettingsManager() {
   if (loading) return <p className="text-sm text-fg-muted">جارٍ تحميل الإعدادات…</p>;
   return (
     <section aria-label="إعدادات المطعم">
-      {error && <p role="alert" className="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-3">{error}</p>}
+      {error && <p role="alert" className="mb-4 text-sm text-red-700 bg-brand-50 border border-brand-200 rounded-md p-3">{error}</p>}
       {message && <p role="status" className="mb-4 text-sm text-green-800 bg-green-50 border border-green-200 rounded-md p-3">{message}</p>}
       <form onSubmit={save} className="max-w-2xl bg-surface border border-line rounded-lg p-4 sm:p-6 space-y-5">
         <h2 className="text-base font-extrabold">بيانات المطعم والتواصل</h2>
