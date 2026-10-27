@@ -5,10 +5,11 @@ const photos = {
   shawarmaWrap: photo("shawarma-wraps"),
   shawarmaPocket: photo("shawarma-pocket"),
   shawarmaWeightChicken: photo("shawarma-weight-chicken"),
-  shawarmaFatta: photo("shawarma-fatta"),
+  shawarmaRiceChicken: photo("shawarma-rice-chicken"),
+  shawarmaRiceBeef: photo("shawarma-rice-beef"),
+  shawarmaRiceMix: photo("shawarma-rice-mix"),
   arabicShawarma: photo("shawarma-arabic"),
-  crepeMeat: photo("crepe-meat"),
-  crepeSavory: photo("crepe-savory"),
+  crepeTriangle: photo("crepe-triangle"),
   pizzaMargherita: photo("pizza-margherita"),
   pizzaVegetable: photo("pizza-vegetable"),
   pizzaSausage: photo("pizza-sausage"),
@@ -21,6 +22,8 @@ const photos = {
   grilledChickenFlatbread: photo("grilled-chicken-flatbread"),
   friedChicken: photo("fried-chicken-basket"),
   crispySandwich: photo("crispy-chicken-sandwich"),
+  zingerFlatbread: photo("zinger-flatbread"),
+  tawookPitaWrap: photo("tawook-pita-wrap"),
   crispySides: photo("crispy-chicken-sides"),
   samosa: photo("samosa"),
   samosaGolden: photo("samosa-golden"),
@@ -63,12 +66,13 @@ export function getProductPhoto(item) {
   }
 
   if (category.includes("الكريبات")) {
-    if (includesAny(title, ["جبن", "بطاطس", "ميكسيكي"])) return photos.crepeSavory;
-    return photos.crepeMeat;
+    return photos.crepeTriangle;
   }
 
   if (category.includes("فتات الشاورما") || title.includes("فتة") || title.includes("فته")) {
-    return photos.shawarmaFatta;
+    if (title.includes("ميكس") || title.includes("مشكل")) return photos.shawarmaRiceMix;
+    if (includesAny(title, MEAT_WORDS)) return photos.shawarmaRiceBeef;
+    return photos.shawarmaRiceChicken;
   }
 
   if (category.includes("أطباق العربي")) return photos.arabicShawarma;
@@ -110,8 +114,9 @@ export function getProductPhoto(item) {
   if (category.includes("سندوتشات")) {
     if (title.includes("بطاطس")) return photos.fries;
     if (title.includes("شاورما") && title.includes("كريسبي")) return photos.shawarmaPocket;
-    if (includesAny(title, ["كريسبي", "زنجر"])) return photos.crispySandwich;
-    if (includesAny(title, ["شيش", "طاووق"])) return photos.grilledChickenFlatbread;
+    if (title.includes("زنجر")) return photos.zingerFlatbread;
+    if (includesAny(title, ["شيش", "طاووق"])) return photos.tawookPitaWrap;
+    if (title.includes("كريسبي")) return photos.crispySandwich;
     if (includesAny(title, MEAT_WORDS)) return photos.beefShawarma;
     if (includesAny(title, CHICKEN_WORDS) || title.includes("شاورما") || title.includes("ميكس")) {
       return photos.shawarmaWrap;

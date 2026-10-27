@@ -245,9 +245,21 @@ function MenuCard({ item, onAdd, isFavorite, onToggleFavorite, quantityForSize, 
   const available = canOrder && item.isAvailable !== false && Number.isFinite(price) && price >= 0;
   const customImage = typeof item.imageUrl === "string" ? item.imageUrl.trim() : "";
   const referencePhoto = getProductPhoto(item);
+  const title = (item.title || "").toLowerCase();
+  const category = (item.category || "").toLowerCase();
+  const isFatta = category.includes("فتات الشاورما") || title.includes("فتة") || title.includes("فته");
+  const isRequestedReference = Boolean(referencePhoto) && (
+    category.includes("الكريبات") ||
+    isFatta ||
+    (category.includes("سندوتشات") && (title.includes("زنجر") || title.includes("شيش") || title.includes("طاووق")))
+  );
   const legacyImage = customImage && isLegacyMenuPhoto(customImage);
-  const referenceImage = (!customImage || legacyImage) && Boolean(referencePhoto);
-  const imageSource = customImage && !legacyImage ? customImage : referencePhoto || customImage || "";
+  const referenceImage = isRequestedReference || ((!customImage || legacyImage) && Boolean(referencePhoto));
+  const imageSource = isRequestedReference
+    ? referencePhoto
+    : customImage && !legacyImage
+      ? customImage
+      : referencePhoto || customImage || "";
 
   return (
     <article className="bg-white rounded-[1.35rem] p-2.5 sm:p-3 shadow-[0_4px_18px_-10px_rgba(39,29,27,0.16)] border border-[#E8DFD5] flex flex-col justify-between hover:border-[#D4C7B9] hover:shadow-[0_12px_24px_-16px_rgba(39,29,27,0.24)] transition-all duration-200 relative group">

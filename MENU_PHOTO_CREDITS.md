@@ -45,3 +45,9 @@ Unsplash's standard license permits commercial and non-commercial use: <https://
 | `rice-bowl.jpg` | Cooked white rice | Robert Moutongoh | <https://www.pexels.com/photo/a-bowl-of-cooked-rice-8923092/> |
 | `fries-bowl.jpg` | French fries in a white bowl | Engin Akyurt | <https://www.pexels.com/photo/french-fries-on-white-ceramic-bowl-8272622/> |
 | `grilled-chicken-rice.jpg` | Chicken mandi with basmati rice | aboodi vesakaran | <https://www.pexels.com/photo/food-photography-18698228/> |
+| `zinger-flatbread.jpg` | Crispy chicken on flatbread (illustrative reference for the Syrian bread zinger sandwich) | Mohamad Sadek | <https://www.pexels.com/photo/cloe-up-photo-of-crisp-chicken-on-bread-served-on-wooden-tray-10361459/> |
+| `tawook-pita-wrap.jpg` | Chicken kebab wraps in flatbread (illustrative reference for the Syrian bread shish tawook sandwich) | Mustafa Erdağ | <https://www.pexels.com/photo/close-up-of-turkish-kebabs-lying-among-raw-ingredients-15390220/> |
+| `crepe-triangle.jpg` | Folded triangular savory crepe | Luis Becerra Fotógrafo | <https://www.pexels.com/photo/food-on-plate-15671379/> |
+| `shawarma-rice-chicken.jpg` | Chicken shawarma-style platter with rice | Dee Dave | <https://www.pexels.com/photo/indian-meal-with-rice-and-curry-8018000/> |
+| `shawarma-rice-beef.jpg` | Spiced beef with rice (illustrative beef fata reference) | Dee Dave | <https://www.pexels.com/photo/rice-and-meat-on-plate-on-table-21385827/> |
+| `shawarma-rice-mix.jpg` | Middle Eastern rice platter with mixed grilled meats (illustrative mixed fata reference) | Mary Ghanati | <https://www.pexels.com/photo/traditional-middle-eastern-platter-with-rice-and-grilled-meats-35536407/> |

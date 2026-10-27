@@ -30,6 +30,17 @@ function normalizeSandwichTitle(category, title = "") {
   return `ساندوتش ${normalizedTitle}`;
 }
 
+function normalizeFattaDescription(category, title, description = "") {
+  const isFatta = category === FATTA_CATEGORY || title.includes("فتة") || title.includes("فته");
+  if (!isFatta) return description;
+
+  const normalizedDescription = String(description || "").trim();
+  if (normalizedDescription.includes("رز") || normalizedDescription.includes("أرز")) {
+    return normalizedDescription;
+  }
+  return normalizedDescription ? `رز + ${normalizedDescription}` : "رز";
+}
+
 function normalizeCategoryList(names = []) {
   const expanded = names.flatMap((name) =>
     name === LEGACY_COMBINED_CATEGORY ? [FATTA_CATEGORY, ARABIC_CATEGORY] : [name]
@@ -52,6 +63,7 @@ function normalizeSnapshot(snapshot) {
         ...item,
         category,
         title: normalizeSandwichTitle(category, item.title),
+        description: normalizeFattaDescription(category, item.title, item.description),
       };
     }),
   };
@@ -77,7 +89,7 @@ export function rowToItem(r) {
     id: r.id,
     category,
     title: normalizeSandwichTitle(category, r.title ?? ""),
-    description: r.description ?? "",
+    description: normalizeFattaDescription(category, r.title ?? "", r.description ?? ""),
     price: r.price != null ? Number(r.price) : null,
     priceM: r.price_m != null ? Number(r.price_m) : null,
     priceL: r.price_l != null ? Number(r.price_l) : null,
@@ -141,10 +153,11 @@ export default function useMenuData() {
 }
 
 function toPublicItem(it) {
+  const category = normalizeItemCategory(it.category, it.title);
   return {
-    category: it.category,
-    title: it.title,
-    description: it.description || "",
+    category,
+    title: normalizeSandwichTitle(category, it.title),
+    description: normalizeFattaDescription(category, it.title, it.description || ""),
     price: it.price ?? null,
     priceM: it.priceM ?? null,
     priceL: it.priceL ?? null,
