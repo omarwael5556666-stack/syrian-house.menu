@@ -15,6 +15,13 @@ const credits = [
     license: "CC BY-SA 2.0",
     licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/",
   },
+  {
+    subject: "شيش طاووق مع الأرز والخبز",
+    photographer: "Miansari66",
+    imageUrl: "https://commons.wikimedia.org/wiki/File:Shish_Taouk.JPG",
+    license: "CC0 1.0",
+    licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+  },
 ];
 
 function SourceLink({ href, label, children }) {
@@ -36,11 +43,11 @@ export default function PhotoCredits() {
   return (
     <details className="group mx-auto mt-5 max-w-3xl rounded-2xl border border-[#E7DED2] bg-white/80 px-4 py-3 text-right shadow-sm">
       <summary className="flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 rounded-lg text-xs font-bold text-[#6E1B29] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6E1B29] [&::-webkit-details-marker]:hidden">
-        <span>مصادر صور الشاورما التوضيحية</span>
+        <span>مصادر الصور التوضيحية</span>
         <ChevronDown className="h-4 w-4 shrink-0 text-[#8A6E5C] transition-transform group-open:rotate-180" aria-hidden="true" />
       </summary>
       <p className="mt-2 text-[11px] leading-5 text-[#75665C]">
-        الصور للتوضيح وليست صور أطباق مطعم البيت السوري. لم نعرض صورة لفتة اللحمة لعدم توفر صورة مرخّصة مطابقة لطبق الرز والشاورما.
+        الصور للتوضيح وليست صور أطباق مطعم البيت السوري. صورة فتة الشيش مرجع لشيش طاووق مع الأرز والخبز، وفتة اللحمة بدون صورة لعدم توفر مرجع مرخّص مطابق.
       </p>
       <ul className="mt-2 divide-y divide-[#EEE7DE]">
         {credits.map((credit) => (
