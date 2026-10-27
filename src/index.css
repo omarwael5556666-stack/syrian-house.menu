@@ -593,38 +593,40 @@ body {
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 640px) {
   .menu-heading {
     align-items: center;
-    gap: 10px;
-    margin: 15px 0 17px;
-    padding: 15px 16px;
-    border-radius: 19px;
+    gap: 8px;
+    margin: 10px 0 12px;
+    padding: 10px 12px;
+    border-radius: 17px;
   }
 
   .menu-heading-kicker {
-    font-size: 9px;
+    display: none;
   }
 
   .menu-heading-title {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .menu-heading-subtitle {
+    margin-top: 2px;
     font-size: 10px;
+    line-height: 1.4;
   }
 
   .menu-heading-actions {
-    gap: 5px;
+    gap: 4px;
   }
 
   .menu-heading-count {
-    min-width: 48px;
-    padding: 0 6px;
+    min-width: 46px;
+    padding: 0 5px;
   }
 
   .menu-heading-count-number {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .menu-heading-count-label {
@@ -632,18 +634,7 @@ body {
   }
 
   .menu-favorites-button {
-    width: 44px;
-    padding: 0;
-    gap: 0;
-  }
-
-  .menu-favorites-button span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
+    padding: 0 10px;
   }
 
   .menu-show-all-button {
