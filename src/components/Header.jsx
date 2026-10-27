@@ -152,7 +152,7 @@ export default function Header({ searchQuery, onSearchChange, restaurantInfo = R
           style={{ background: "linear-gradient(270deg, #1B120D 0%, #1B120D 34%, rgba(27,18,13,.94) 48%, rgba(27,18,13,0) 72%)" }}
         />
 
-        <div className="absolute right-0 top-1/2 z-20 w-[74%] max-w-[460px] -translate-y-1/2 px-4 text-right sm:w-[58%] sm:px-7">
+        <div className="hero-copy absolute right-0 top-1/2 z-20 w-[74%] max-w-[460px] -translate-y-1/2 px-4 text-right sm:w-[58%] sm:px-7">
           <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1 text-[9px] font-extrabold tracking-wide text-[#F4D9A8] shadow-sm sm:mb-3 sm:text-[10px]">
             <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#8C2334]" />
             {restaurantInfo.tagline}
@@ -164,15 +164,29 @@ export default function Header({ searchQuery, onSearchChange, restaurantInfo = R
             شاورما ومشاوي شامية على أصولها، طازة كل يوم.
           </p>
 
-          <button
-            onClick={handleOrderClick}
-            className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[#8C2334] px-4 text-xs font-black text-white shadow-[0_8px_20px_rgba(140,35,52,0.32)] transition-all hover:bg-[#6E1B29] hover:shadow-[0_10px_24px_rgba(140,35,52,0.42)] active:scale-[0.98] sm:min-h-11 sm:px-5 sm:text-sm"
-          >
-            <span>{itemCount > 0 ? "استكمال الطلب" : "اطلب الآن"}</span>
-            <span aria-hidden="true" className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15">
-              <ArrowLeft className="h-3.5 w-3.5" />
-            </span>
-          </button>
+          <div className="flex flex-wrap items-center justify-start gap-1.5 sm:gap-2">
+            <button
+              type="button"
+              onClick={handleOrderClick}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#8C2334] px-3 text-xs font-black text-white shadow-[0_8px_20px_rgba(140,35,52,0.32)] transition-all hover:bg-[#6E1B29] hover:shadow-[0_10px_24px_rgba(140,35,52,0.42)] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F4D9A8] sm:px-5 sm:text-sm"
+            >
+              <span>{itemCount > 0 ? "استكمال الطلب" : "اطلب الآن"}</span>
+              <span aria-hidden="true" className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15">
+                <ArrowLeft className="h-3.5 w-3.5" />
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowPhonesModal(true)}
+              aria-haspopup="dialog"
+              aria-label="اتصل بمطعم البيت السوري"
+              className="hero-contact-btn inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border border-[#F4D9A8]/50 bg-[#F4D9A8]/10 px-2 text-xs font-bold text-[#F4D9A8] shadow-sm transition-all hover:border-[#F4D9A8]/75 hover:bg-[#F4D9A8]/15 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:gap-2 sm:px-4 sm:text-sm"
+            >
+              <PhoneCall aria-hidden="true" className="h-4 w-4 shrink-0" />
+              <span>اتصل بنا</span>
+            </button>
+          </div>
         </div>
 
       </div>
@@ -197,15 +211,16 @@ export default function Header({ searchQuery, onSearchChange, restaurantInfo = R
       {/* ─── Quick Contact Numbers Modal ─────────────── */}
       {showPhonesModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-5 max-w-sm w-full shadow-2xl animate-scale-in">
+          <div role="dialog" aria-modal="true" aria-labelledby="restaurant-phones-title" className="bg-white rounded-3xl p-5 max-w-sm w-full shadow-2xl animate-scale-in">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 text-gray-900 font-black">
                 <PhoneCall className="w-5 h-5 text-[#8C2334]" />
-                <h3 className="text-base">أرقام خدمة التوصيل</h3>
+                <h3 id="restaurant-phones-title" className="text-base">أرقام خدمة التوصيل</h3>
               </div>
               <button
                 onClick={() => setShowPhonesModal(false)}
                 className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900"
+                aria-label="إغلاق نافذة أرقام الاتصال"
               >
                 <X className="w-4 h-4" />
               </button>

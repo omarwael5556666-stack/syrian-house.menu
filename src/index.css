@@ -861,6 +861,17 @@ body {
   transform: scale(0.98);
 }
 
+@media (max-width: 380px) {
+  .hero-copy {
+    width: 86%;
+  }
+
+  .hero-contact-btn {
+    background-color: #3C1019;
+    border-color: #D9AA76;
+  }
+}
+
 /* ─── Pulse Indicator ───────────────────────────── */
 .pulse-indicator {
   position: relative;
