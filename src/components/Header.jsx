@@ -136,24 +136,28 @@ export default function Header({ searchQuery, onSearchChange, restaurantInfo = R
       </div>
 
       {/* ─── 3. Hero Banner ────────────────────────────── */}
-      <div className="relative isolate min-h-[190px] sm:min-h-[238px] flex flex-col justify-center overflow-hidden rounded-[1.75rem] border border-[#D7BD91]/45 bg-[#1B120D] p-4 sm:p-7 mb-3 text-white shadow-[0_18px_45px_-18px_rgba(35,20,10,0.42)]">
+      <div className="relative isolate min-h-[200px] sm:min-h-[238px] overflow-hidden rounded-[1.75rem] border border-[#D7BD91]/45 bg-[#1B120D] p-0 mb-3 text-white shadow-[0_18px_45px_-18px_rgba(35,20,10,0.42)]">
         <img
-          src="/syrian-hero-bg.jpg"
+          src="/syrian-hero-clean.jpg"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 z-0 h-full w-full object-cover object-left sm:object-center"
+          className="absolute inset-y-0 left-0 z-0 h-full w-[68%] object-cover object-left sm:w-[62%]"
           loading="eager"
           fetchPriority="high"
         />
 
-        <div aria-hidden="true" className="absolute inset-0 z-10 bg-gradient-to-l from-[#160F0A]/28 via-[#160F0A]/10 to-transparent" />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-10"
+          style={{ background: "linear-gradient(270deg, #1B120D 0%, #1B120D 34%, rgba(27,18,13,.94) 48%, rgba(27,18,13,0) 72%)" }}
+        />
 
-        <div className="relative z-20 ms-auto w-[76%] max-w-[420px] pe-1 text-right sm:me-2 sm:w-[54%] sm:max-w-[440px]">
+        <div className="absolute right-0 top-1/2 z-20 w-[74%] max-w-[460px] -translate-y-1/2 px-4 text-right sm:w-[58%] sm:px-7">
           <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1 text-[9px] font-extrabold tracking-wide text-[#F4D9A8] shadow-sm sm:mb-3 sm:text-[10px]">
             <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#8C2334]" />
             {restaurantInfo.tagline}
           </span>
-          <h2 className="mb-1 whitespace-nowrap text-[22px] font-black leading-tight tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:mb-2 sm:text-3xl">
+          <h2 className="mb-1 whitespace-nowrap text-[20px] font-black leading-tight tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:mb-2 sm:text-3xl">
             طعم سوري <span className="text-[#D9AA76]">أصيل.</span>
           </h2>
           <p className="mb-3 max-w-[34rem] text-[11px] font-medium leading-relaxed text-white/90 drop-shadow-sm sm:mb-4 sm:text-sm">
